@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="源码分析,elastic-job">
+
+
+<meta name="description" content="我本身也没有读源码的习惯，读源码太乏味，也不容易理解，缺乏耐心，可能这也是我没有成为大牛的原因吧，既然认识到错误，那就现在开始养成吧。读源码是件痛苦的事情，所以我也和很多网友一样也会在网上查询关...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    elastic-job源码分析之概述 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="elastic-job源码分析之概述">
+            
+            elastic-job源码分析之概述
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/elastic-job/">elastic-job</a> <a class="tag-link" href="/tags/源码分析/">源码分析</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/07/20</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                473</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>我本身也没有读源码的习惯，读源码太乏味，也不容易理解，缺乏耐心，可能这也是我没有成为大牛的原因吧，既然认识到错误，那就现在开始养成吧。读源码是件痛苦的事情，所以我也和很多网友一样也会在网上查询关于读源码的方法，最终也没有找到和我契合的方法，那只能撸着袖子，先干起来，我决定在博客里面记录下，读源码的过程，方便以后查错纠正。</p>
+<hr>
+<ol>
+<li><ul>
+<li style="list-style: none"><input type="checkbox" checked> 确认目标<br>我读源码，更多的是想学习源码优秀的设计思想，与设计模式的运用，某个领域的设计模型。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol start="2">
+<li><ul>
+<li style="list-style: none"><input type="checkbox" checked> 选择一个与自己密切相关的开源项目<br>现公司项目里面用到了elastic-job,我选择了这个与我联系密切的</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol start="3">
+<li><ul>
+<li><p>[x] 认识elastic-job的架构与主要功能<br>认识一下系统的架构，<a href="http://elasticjob.io/docs/elastic-job-lite/00-overview/" target="_blank" rel="noopener">官方文档</a>。</p>
+</li>
+<li><p>分布式调度协调</p>
+</li>
+<li>弹性扩容缩容</li>
+<li>失效转移</li>
+<li>错过执行作业重触发</li>
+<li>作业分片一致性，保证同一分片在分布式环境中仅一个执行实例</li>
+<li>自诊断并修复分布式不稳定造成的问题</li>
+<li>支持并行调度</li>
+<li>支持作业生命周期操作</li>
+<li>丰富的作业类型</li>
+<li>Spring整合以及命名空间提供</li>
+<li>运维平台</li>
+</ul>
+</li>
+</ol>
+<hr>
+<ol start="4">
+<li><ul>
+<li style="list-style: none"><input type="checkbox" checked> 从主功能入手分析</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><a href="https://huangchunwu.github.io/2019/07/20/elastic-job源码分析之JOB的启动过程" target="_blank" rel="noopener">elastic-job源码分析之JOB的作业启动过程</a></li>
+<li><a href="https://huangchunwu.github.io/2019/07/20/elastic-job源码分析之JOB的作业执行过程" target="_blank" rel="noopener">elastic-job源码分析之JOB的作业执行过程</a></li>
+<li><a href="[https://huangchunwu.github.io/2019/07/20/elastic-job%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B9%8B%E4%BD%8D%E8%BF%90%E7%AE%97/](https://huangchunwu.github.io/2019/07/20/elastic-job源码分析之位运算/">elastic-job源码分析之位运算</a>)</li>
+</ul>
+<hr>
+<ol start="5">
+<li><ul>
+<li style="list-style: none"><input type="checkbox"> elastic-job的特性源码分析</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>如何分片？分片的算法是什么</li>
+<li>怎么保证作业的高可用</li>
+<li>怎么与zk配合，怎么防止注册中心与作业服务器的数据不一致性</li>
+</ul>
+<hr>
+<ol start="6">
+<li><ul>
+<li style="list-style: none"><input type="checkbox"> 与TBSchedule 比较</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>最后，预祝自己成功！</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/07/20/elastic-job源码分析之位运算/" class="pre-post btn btn-default" title='elastic-job源码分析之位运算'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            elastic-job源码分析之位运算</span>
+    </a>
+    
+    
+    <a href="/2019/07/16/此刻，我想说的/" class="next-post btn btn-default" title='此刻，我想说的'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            此刻，我想说的</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <p>暂无目录</p>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

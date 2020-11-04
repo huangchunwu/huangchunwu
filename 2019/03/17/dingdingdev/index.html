@@ -1,0 +1,459 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="钉钉">
+
+
+<meta name="description" content="今年，我又做了一个钉钉微应用的项目，第一次接触钉钉，把踩过的坑，记录下来，为后人乘凉所用。
+
+准备工作
+开放平台注册申请权限
+选择钉钉应用类型，创建应用，获取AppKey，AppSecret，C...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    钉钉H5微应用开发总结 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="钉钉H5微应用开发总结">
+            
+            钉钉H5微应用开发总结
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/钉钉/">钉钉</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/03/17</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                597</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>今年，我又做了一个钉钉微应用的项目，第一次接触钉钉，把踩过的坑，记录下来，为后人乘凉所用。</p>
+<hr>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li>开放平台注册申请权限</li>
+<li>选择钉钉应用类型，创建应用，获取AppKey，AppSecret，CORP_ID，</li>
+<li>准备开发环境 静态页面、JS，CSS放在ngnix，本地接口用tomcat。</li>
+<li>内网穿透，用于开发时候调试钉钉应用</li>
+</ul>
+<blockquote>
+<p>减少代码耦合度，我采用前后端分离，没有采用freemaker等模板引擎工具，我将页面与接口放在不同服务器上，那么就有跨域问题，解决方案是ngnix，配置反向代理同个host不同端口，则可以解决JS跨域问题。</p>
+</blockquote>
+<blockquote>
+<p> 钉钉下，有E应用（不成熟），微应用（较成熟）。我用的是相对成熟的微应用。另外应用还分，第三方企业内部应用，企业内部应用，第三方个人应用，移动应用接入。由于我的业务方需求，我选择的企业内部应用，注意看对应的文档，钉钉功能太混杂容易混淆。</p>
+</blockquote>
+<h2 id="开发过程"><a href="#开发过程" class="headerlink" title="开发过程"></a>开发过程</h2><h3 id="引入JS"><a href="#引入JS" class="headerlink" title="引入JS"></a>引入JS</h3><p>common.js</p>
+<pre><code class="javascript">&lt;script type=&quot;text/javascript&quot; src=&quot;//g.alicdn.com/dingding/dingtalk-jsapi/2.0.57/dingtalk.open.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<h3 id="JSAPI免登授权码"><a href="#JSAPI免登授权码" class="headerlink" title="JSAPI免登授权码"></a>JSAPI免登授权码</h3><p>获取当前钉钉登录用户的账号信息，需要通过免登授权码换取</p>
+<pre><code class="javascript">  //获取免登授权码
+    dd.ready(function() {
+        dd.runtime.permission.requestAuthCode({
+            corpId: _config.corpId,
+            onSuccess: function(info) {
+
+                var _params = {&quot;code&quot;:info.code};
+                tools.getReqData(&#39;/api/dd/getCurrentLoginUser&#39;, _params, getUserCall);//通过免登授权码获取用户详细信息
+            },
+            onFail : function(err) {
+                alert(&#39;fail: &#39; + JSON.stringify(err));
+            }
+
+        });
+
+        dd.error(function(error){
+            alert(&#39;dd error: &#39; + JSON.stringify(err));
+        });
+    });
+</code></pre>
+<h3 id="JSAPI鉴权"><a href="#JSAPI鉴权" class="headerlink" title="JSAPI鉴权"></a>JSAPI鉴权</h3><p>需要用到钉钉的日历控件，组织机构多选弹出框等控件，所以需要鉴权</p>
+<pre><code class="javascript"> //鉴权验证
+    dd.config({
+        agentId : _config.agentid,
+        corpId : _config.corpId,
+        timeStamp : _config.timeStamp,
+        nonceStr : _config.nonceStr,
+        signature : _config.signature,
+        jsApiList : [ &#39;runtime.info&#39;, &#39;biz.contact.choose&#39;,
+            &#39;device.notification.confirm&#39;, &#39;device.notification.alert&#39;,
+            &#39;device.notification.prompt&#39;, &#39;biz.ding.post&#39;,&#39;biz.contact.complexPicker&#39;,
+            &#39;biz.util.openLink&#39;,&#39;biz.util.datepicker&#39; ]
+    });
+</code></pre>
+<h3 id="获取TOKEN"><a href="#获取TOKEN" class="headerlink" title="获取TOKEN"></a>获取TOKEN</h3><pre><code class="javascript">     /*
+     * 在此方法中，为了避免频繁获取access_token，
+     * 在距离上一次获取access_token时间在两个小时之内的情况，
+     * 将直接从持久化存储中读取access_token
+     *
+     * 因为access_token和jsapi_ticket的过期时间都是7200秒
+     * 所以在获取access_token的同时也去获取了jsapi_ticket
+     * 注：jsapi_ticket是在前端页面JSAPI做权限验证配置的时候需要使用的
+     * 具体信息请查看开发者文档--权限验证配置
+     */
+    public static String getAccessToken() throws OApiException {
+        long curTime = System.currentTimeMillis();
+        JSONObject accessTokenValue = (JSONObject) FileUtils.getValue(&quot;accesstoken&quot;, Env.APP_KEY);
+        String accToken = &quot;&quot;;
+        JSONObject jsontemp = new JSONObject();
+        if (accessTokenValue == null || curTime - accessTokenValue.getLong(&quot;begin_time&quot;) &gt;= cacheTime) {
+            try {
+                ServiceFactory serviceFactory = ServiceFactory.getInstance();
+                CorpConnectionService corpConnectionService = serviceFactory.getOpenService(CorpConnectionService.class);
+                accToken = corpConnectionService.getCorpToken(Env.APP_KEY, Env.APP_SECRET);
+                // save accessToken
+                JSONObject jsonAccess = new JSONObject();
+                jsontemp.clear();
+                jsontemp.put(&quot;access_token&quot;, accToken);
+                jsontemp.put(&quot;begin_time&quot;, curTime);
+                jsonAccess.put(Env.APP_KEY, jsontemp);
+                //真实项目中最好保存到数据库中
+                FileUtils.write2File(jsonAccess, &quot;accesstoken&quot;);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            return accessTokenValue.getString(&quot;access_token&quot;);
+        }
+
+        return accToken;
+    }
+
+</code></pre>
+<h3 id="获取当前用户信息"><a href="#获取当前用户信息" class="headerlink" title="获取当前用户信息"></a>获取当前用户信息</h3><pre><code class="javascript">    /**
+     * 根据免登授权码查询免登用户userId
+     * @param accessToken
+     * @param code
+     * @return
+     * @throws Exception
+     */
+    public static CorpUserBaseInfo getUserInfo(String accessToken, String code) throws Exception {
+        CorpUserService corpUserService = ServiceFactory.getInstance().getOpenService(CorpUserService.class);
+        return corpUserService.getUserinfo(accessToken, code);
+    }
+
+</code></pre>
+<h3 id="钉钉日历控件"><a href="#钉钉日历控件" class="headerlink" title="钉钉日历控件"></a>钉钉日历控件</h3><pre><code class="javascript">   $(&quot;#proBidOpent&quot;).click(function(){
+    var t = this;
+    var curDate = (new Date().getFullYear()) + &#39;-&#39; + (new Date().getMonth()) + &#39;-&#39; + (new Date().getDay);
+    dd.biz.util.datepicker({
+        format: &#39;yyyy-MM-dd&#39;,//注意：format只支持android系统规范，即2015-03-31格式为yyyy-MM-dd
+        value: curDate, //默认显示日期
+        onSuccess : function(result) {
+            $(t).val(result.value);
+            //onSuccess将在点击完成之后回调
+            /*{
+             value: &quot;2015-02-10&quot;
+             }
+             */
+        },
+        onFail : function(err) {
+            alert(JSON.stringify(err));
+        }
+    })
+});
+
+</code></pre>
+<h3 id="钉钉滑动选择人员控件"><a href="#钉钉滑动选择人员控件" class="headerlink" title="钉钉滑动选择人员控件"></a>钉钉滑动选择人员控件</h3><pre><code class="javascript">  $(&#39;#recorderName&#39;).click(function(){
+    var tx = this;
+
+    dd.biz.contact.complexPicker({
+        title:&quot;备案人员&quot;,            //标题
+        corpId:_config.corpId,              //企业的corpId
+        multiple:true,            //是否多选
+        limitTips:&quot;超出了&quot;,          //超过限定人数返回提示
+        maxUsers:100,            //最大可选人数
+        pickedUsers:[],            //已选用户
+        pickedDepartments:[],          //已选部门
+        disabledUsers:[],            //不可选用户
+        disabledDepartments:[],        //不可选部门
+        requiredUsers:[],            //必选用户（不可取消选中状态）
+        requiredDepartments:[],        //必选部门（不可取消选中状态）
+        appId:_config.agentid,              //微应用的Id
+        permissionType:&quot;xxx&quot;,          //可添加权限校验，选人权限，目前只有GLOBAL这个参数
+        responseUserOnly:true,        //返回人，或者返回人和部门
+        startWithDepartmentId:0 ,   //仅支持0和-1
+        onSuccess: function(result) {
+            if(result.selectedCount&gt;0){
+                var empIds = &quot;&quot;;
+                var empNames = &quot;&quot;;
+                for(var i=0;i&lt; result.selectedCount;i++){
+                    empIds = empIds + result.users[i].emplId+&quot;,&quot;;
+                    empNames = empNames + result.users[i].name+&quot;,&quot;;
+                }
+                empIds = empIds.substring(0,empIds.length-1);
+                empNames = empNames.substring(0,empNames.length-1);
+                $(tx).val(empNames);
+                var attr_hidden = $(tx).attr(&quot;attr_hidden&quot;);
+                $(&quot;#&quot;+attr_hidden).val(empIds);
+            }
+
+        },
+        onFail : function(err) {
+            alert(JSON.stringify(err));
+        }
+    });
+});
+
+</code></pre>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><a href="https://github.com/huangchunwu/myDingding" target="_blank" rel="noopener">开源代码</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/03/22/jvmerror/" class="pre-post btn btn-default" title='JVM进程占用内存过高排查'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            JVM进程占用内存过高排查</span>
+    </a>
+    
+    
+    <a href="/2019/03/16/myThink/" class="next-post btn btn-default" title=''>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            </span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开发过程"><span class="toc-text">开发过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引入JS"><span class="toc-text">引入JS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSAPI免登授权码"><span class="toc-text">JSAPI免登授权码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSAPI鉴权"><span class="toc-text">JSAPI鉴权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取TOKEN"><span class="toc-text">获取TOKEN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取当前用户信息"><span class="toc-text">获取当前用户信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#钉钉日历控件"><span class="toc-text">钉钉日历控件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#钉钉滑动选择人员控件"><span class="toc-text">钉钉滑动选择人员控件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附录"><span class="toc-text">附录</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

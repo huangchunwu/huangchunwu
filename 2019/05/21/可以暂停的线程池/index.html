@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="线程池">
+
+
+<meta name="description" content="
+问渠那得清如许，为有源头活水来
+
+这段时间没有更新博客了，不是因为找到工作了而繁忙了，也不是在忙于找工作，而是趁着有空在家带娃了,没有输入哪来的输出。面试的时候最喜欢问线程池了，我遇到的题目有...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    可以暂停的线程池 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="可以暂停的线程池">
+            
+            可以暂停的线程池
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/线程池/">线程池</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/05/21</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                533</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <blockquote>
+<p>问渠那得清如许，为有源头活水来</p>
+</blockquote>
+<p>这段时间没有更新博客了，不是因为找到工作了而繁忙了，也不是在忙于找工作，而是趁着有空在家带娃了,没有输入哪来的输出。面试的时候最喜欢问线程池了，我遇到的题目有：</p>
+<ul>
+<li>线程池的工作原理</li>
+<li>Executors 默认的队列为啥没有用arrayBlockingQueue</li>
+<li>如何实现将任务不塞入队列中，直接用线工作线程处理</li>
+<li>如何暂停线程池中的工作线程</li>
+</ul>
+<h2 id="如何实现暂停线程池的工作线程"><a href="#如何实现暂停线程池的工作线程" class="headerlink" title="如何实现暂停线程池的工作线程"></a>如何实现暂停线程池的工作线程</h2><p>其实这个在线程池源码里面有个例子，这里改造了一下，通过命令控制台输入命令控制线程池。原理是：<br>通过重载线程池提供的beforeExecute（），用lock+condition的wait（）使得工作线程暂停。另外提供一个恢复方法，使用的是lock+condition的signalAll唤醒暂停的工作线程。</p>
+<pre><code>public class PauseThreadPool extends ThreadPoolExecutor {
+
+    private boolean isPaused;
+
+    private ReentrantLock pauseLock = new ReentrantLock();
+    private Condition unpaused = pauseLock.newCondition();
+
+    public PauseThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue&lt;Runnable&gt; workQueue) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    }
+
+    //线程池执行任务之前
+    protected void beforeExecute(Thread t, Runnable r) {
+        pauseLock.lock();
+        try {
+            while (isPaused) {
+                unpaused.await();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            pauseLock.unlock();
+        }
+
+
+    }
+
+    //暂停工作线程
+    public void pause() {
+        pauseLock.lock();
+        try {
+            isPaused = true;
+        }finally {
+            pauseLock.unlock();
+        }
+
+
+    }
+    //恢复工作线程
+    public void resume() {
+        pauseLock.lock();
+        try {
+            isPaused = false;
+            unpaused.signalAll();
+        }finally {
+            pauseLock.unlock();
+        }
+    }
+
+    //线程池执行任务之前
+    protected void afterExecute(Runnable r, Throwable t) {
+        System.out.println(&quot;afterExecute  task:&quot; + Thread.currentThread().getName());
+    }
+
+    //线程池终止时候调用
+    protected void terminated() {
+        System.out.println(&quot;terminated  task:&quot; + Thread.currentThread().getName());
+    }
+
+
+    public static void main(String[] args) {
+        PauseThreadPool pool = new PauseThreadPool(5, 10, 30, TimeUnit.SECONDS, new ArrayBlockingQueue&lt;Runnable&gt;(10));
+        try {
+            System.out.print(&quot;Enter a char :&quot;);
+            while (true) {
+                Scanner sc = new Scanner(System.in);
+                int val = sc.nextInt();
+                if (val == 13 || val == 10) {
+
+                }
+                if (val == 1) {//命令行输入1，暂停
+                    pool.pause();
+                } else if (val == 2) {//输入2 恢复
+                    pool.resume();
+                } else if (val == 0) {// 提交任务
+                    pool.submit(new Callable&lt;Object&gt;() {
+                        @Override
+                        public Object call() throws Exception {
+                            System.out.println(&quot;start  task:&quot; + Thread.currentThread().getName());
+                            return null;
+                        }
+                    });
+                }else if (val == 3){//关闭线程池
+                    pool.shutdown();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
+</code></pre>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/05/22/从分布式事务理论，总结途牛火车票的解决方案/" class="pre-post btn btn-default" title='从分布式事务理论，总结途牛火车票的解决方案'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            从分布式事务理论，总结途牛火车票的解决方案</span>
+    </a>
+    
+    
+    <a href="/2019/05/10/如何写一个程序频繁的FULL-GC/" class="next-post btn btn-default" title='如何写一个程序频繁的FULL GC'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            如何写一个程序频繁的FULL GC</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何实现暂停线程池的工作线程"><span class="toc-text">如何实现暂停线程池的工作线程</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

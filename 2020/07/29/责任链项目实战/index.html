@@ -1,0 +1,541 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="设计模式">
+
+
+<meta name="description" content="写在前面“纸上得来终觉浅,绝知此事要躬行”.
+读完23种设计模式后,感觉肚子还是空空的,不知道无从下手,今天翻了一下之前的博客,曾经记录过关于Apache Commons Chain的使用,它其...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    责任链和命令模式在订单系统的实战记录 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="责任链和命令模式在订单系统的实战记录">
+            
+            责任链和命令模式在订单系统的实战记录
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/设计模式/">设计模式</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2020/07/29</span>
+    </span>
+    
+    
+</div>
+        
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>“纸上得来终觉浅,绝知此事要躬行”.</p>
+<p>读完23种设计模式后,感觉肚子还是空空的,不知道无从下手,今天翻了一下之前的博客,曾经记录过关于Apache Commons Chain的使用,它其实基于责任链,命令模式来写的,它很适合做流程化的逻辑代码,比如订单的下单,支付流程以及退款流程,让代码写的很nice,下面把我应用在订单系统的实战记录下,看下对其他人有没有帮助.</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><img src="/images/70" alt="img"></p>
+<pre><code class="java">Command接口:
+       1. 命令模式,实现它来执行责任链中某个节点的业务. 
+       2. 主要方法 boolean execute(Context context); return false 会继续执行下一个节点,否则终止.
+
+</code></pre>
+<pre><code class="java">Filter接口:
+       1. extend command.
+       2. 比Command接口多了一个方法 boolean postprocess(Context var1, Exception var2);只要Filter的execute方法被调用，不论链的执行过程中是否抛出错误，Commons Chain都将保证Filter的postprocess方法被调用。
+
+</code></pre>
+<pre><code class="Java">ChainBase基类:
+    它表示“命令链”，要在其中执行的命令，需要先添加到Chain中
+</code></pre>
+<pre><code class="Java">Context接口:
+    它表示命令执行的上下文,在命令间实现共享信息的传递
+</code></pre>
+<h2 id="订单系统支付流程"><a href="#订单系统支付流程" class="headerlink" title="订单系统支付流程"></a>订单系统支付流程</h2><p>直接上代码了,代码里面有注释,代码可以运行测试</p>
+<h3 id="1-pom文件引入"><a href="#1-pom文件引入" class="headerlink" title="1. pom文件引入"></a>1. pom文件引入</h3><pre><code class="xml">&lt;!-- 引入commons-chain即可 --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;commons-chain&lt;/groupId&gt;
+  &lt;artifactId&gt;commons-chain&lt;/artifactId&gt;
+  &lt;version&gt;1.2&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--Lombok 程序员的高效开发利器 --&gt;
+&lt;dependency&gt;
+   &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+   &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+   &lt;version&gt;1.18.12&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!-- 引入 logback日志 --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+  &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+  &lt;version&gt;2.0.0-alpha1&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+  &lt;artifactId&gt;logback-core&lt;/artifactId&gt;
+  &lt;version&gt;1.3.0-alpha5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+  &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+  &lt;version&gt;1.3.0-alpha5&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h3 id="2-订单支付主流程"><a href="#2-订单支付主流程" class="headerlink" title="2. 订单支付主流程"></a>2. 订单支付主流程</h3><p>业务逻辑: 订单下单后,应付金额 = 订单总价, 如果使用了优惠券,我们需要把优惠券的金额从支付金额减去,如果还有商旅卡之类营销类卡余额得扣去,最后才是客户应该支付的现金,计算好应该支付的现金后,需要同步订单的信息到公共订单系统,供app查询,app刷到订单系统给的该笔订单的支付开关是打开的,则跳转到收银台,比如微信或者支付宝开始支付,下面我们看下怎么实现的.</p>
+<pre><code>- OrderPayChain  定义支付流程的步骤
+- OrderContext   定义订单的信息上下文:订单总价,已支付的价格,使用的商旅卡价格
+- PromotionPayCommand  优惠券支付逻辑
+- BusinessPayCommand  商旅卡支付逻辑
+- CashPayCommand 现金支付逻辑
+- SysncOrderInfoCommand 同步订单信息,打开支付开关
+</code></pre><h2 id="3-实现过程"><a href="#3-实现过程" class="headerlink" title="3. 实现过程"></a>3. 实现过程</h2><pre><code class="Java">import org.apache.commons.chain.impl.ChainBase;
+
+import java.math.BigDecimal;
+
+/**
+ * 这是变异后的责任链和命令模式
+ *
+ * 它表示“命令链”，要在其中执行的命令，需要先添加到Chain中
+ */
+public class OrderPayChain extends ChainBase {
+
+    public void init() {
+
+        //第一步: 扣优惠券
+        this.addCommand(new PromotionPayCommand());
+        //第二步:优先商旅卡
+        this.addCommand(new BusinessPayCommand());
+        //第三步: 扣现金
+        this.addCommand(new CashPayCommand());
+        // 同步订单信息
+        this.addCommand(new SysncOrderInfoCommand());
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        var refundTicketChain = new OrderPayChain();
+        refundTicketChain.init();
+        var context = new OrderContext();
+        context.setOrderId(1621940242);
+        context.setTotalPrice(BigDecimal.valueOf(100));
+        refundTicketChain.execute(context);
+    }
+}
+</code></pre>
+<pre><code class="Java">import lombok.Data;
+import org.apache.commons.chain.impl.ContextBase;
+
+import java.math.BigDecimal;
+
+/**
+ * Context接口。它表示命令执行的上下文,在命令间实现共享信息的传递
+ */
+@Data
+public class OrderContext extends ContextBase {
+
+    /**
+     * 订单号
+     */
+    private Integer orderId;
+    /**
+     * 订单总价
+     */
+    private BigDecimal totalPrice = BigDecimal.ZERO;
+
+    /**
+     * 该笔订单已经支付的总价
+     */
+    private BigDecimal payTotalPrice = BigDecimal.ZERO;
+
+    /**
+     * 使用商旅卡支付的金额
+     */
+    private BigDecimal businessCardPayPrice = BigDecimal.ZERO;
+}
+</code></pre>
+<pre><code class="Java">import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.chain.Context;
+import org.apache.commons.chain.Filter;
+
+import java.math.BigDecimal;
+
+@Slf4j
+public class BusinessPayCommand implements Filter {
+
+
+    @Override
+    public boolean execute(Context context) throws Exception {
+
+        OrderContext orderContext = (OrderContext) context;
+
+        //查询客户账户下的商旅卡余额,比如查询结果是12.5元
+//        var bPrice = new BigDecimal(12.5); 禁止这种写法
+        var bPrice = BigDecimal.valueOf(12.5);
+        //算出还需要支付的价格
+        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());
+        //该笔订单,优先商旅卡支付全额
+        if (bPrice.compareTo(remainPrice) &gt;= 0) {
+            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(remainPrice));
+            orderContext.setBusinessCardPayPrice(remainPrice);
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;订单orderId:{} ,订单总价:{},使用商旅卡支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));
+            }
+            return true;
+        }else {
+            // 使用商旅卡支付部分
+            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(bPrice));
+            orderContext.setBusinessCardPayPrice(bPrice);
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;订单orderId:{} ,订单总价:{},使用商旅卡支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public boolean postprocess(Context context, Exception e) {
+
+        OrderContext orderContext = (OrderContext) context;
+        var businessCardPayPrice = orderContext.getBusinessCardPayPrice();
+        // 请求扣除账户下商旅卡
+        //httpClient.post(&quot;/api/businessCard/reduce&quot;,businessCardPayPrice);
+        return false;
+    }
+
+}
+</code></pre>
+<pre><code class="Java">import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.math.BigDecimal;
+
+
+@Slf4j
+public class PromotionPayCommand implements Command {
+    @Override
+    public boolean execute(Context context) throws Exception {
+        OrderContext orderContext = (OrderContext) context;
+
+        //查询客户账户下的优惠券余额,比如查询结果是10元
+        var bPrice = BigDecimal.valueOf(10);
+        //算出还需要支付的价格
+        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());
+        //该笔订单,优先商旅卡支付全额
+        if (bPrice.compareTo(remainPrice) &gt;= 0) {
+            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(remainPrice));
+            orderContext.setBusinessCardPayPrice(remainPrice);
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;订单orderId:{} ,订单总价:{},使用优惠券支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));
+            }
+            return true;
+        }else {
+            // 使用商旅卡支付部分
+            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(bPrice));
+            orderContext.setBusinessCardPayPrice(bPrice);
+            if (log.isDebugEnabled()) {
+                log.debug(&quot;订单orderId:{} ,订单总价:{},使用优惠券支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));
+            }
+            return false;
+        }
+    }
+}
+</code></pre>
+<pre><code class="Java">import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.chain.Filter;
+
+import java.math.BigDecimal;
+
+@Slf4j
+public class CashPayCommand implements Filter {
+    @Override
+    public boolean execute(Context context) throws Exception {
+        OrderContext orderContext = (OrderContext) context;
+
+        //算出还需要支付的现金
+        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());
+        if (log.isDebugEnabled()) {
+            log.debug(&quot;订单orderId:{} ,订单总价:{},还需要支付现金:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),remainPrice);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean postprocess(Context context, Exception e) {
+        log.info(&quot;打开支付开关,客户端引导跳转收银台去支付&quot;);
+        return false;
+    }
+}
+</code></pre>
+<pre><code class="Java">import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+@Slf4j
+public class SysncOrderInfoCommand implements Command {
+    @Override
+    public boolean execute(Context context) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug(&quot;同步子系统订单信息到公共订单系统&quot;);
+        }
+        return false;
+    }
+}
+</code></pre>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><pre><code class="shell">[PromotionPayCommand.java:33]2020-07-29 16:26:45.982 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,使用优惠券支付了：10,还需要支付:90
+[BusinessPayCommand.java:36]2020-07-29 16:26:45.992 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,使用商旅卡支付了：12.5,还需要支付:77.5
+[CashPayCommand.java:19]2020-07-29 16:26:45.993 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,还需要支付现金:77.5
+[SysncOrderInfoCommand.java:12]2020-07-29 16:26:45.994 [DEBUG] {main} 同步子系统订单信息到公共订单系统
+[CashPayCommand.java:26]2020-07-29 16:26:45.994 [INFO] {main} 打开支付开关,客户端引导跳转收银台去支付
+</code></pre>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2020/10/29/如何减肥/" class="pre-post btn btn-default" title='减肥坚持不下去？一个立竿见影的方法'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            减肥坚持不下去？一个立竿见影的方法</span>
+    </a>
+    
+    
+    <a href="/2020/07/02/habase应用查询慢hbase-shell查询快/" class="next-post btn btn-default" title='habase应用查询慢，hbase shell查询快'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            habase应用查询慢，hbase shell查询快</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概念"><span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#订单系统支付流程"><span class="toc-text">订单系统支付流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-pom文件引入"><span class="toc-text">1. pom文件引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-订单支付主流程"><span class="toc-text">2. 订单支付主流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-实现过程"><span class="toc-text">3. 实现过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

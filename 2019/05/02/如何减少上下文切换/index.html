@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="协程">
+
+
+<meta name="description" content="背景在开发工作中，遇到一些串行处理比较耗时的任务，我会想到用多线程，切片并行执行，已减少请求响应时间，提高吞吐量。可是，开辟线程也是需要消耗系统内存的，一个线程的线程栈，JVM默认配置1M左右，...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    用协程代替线程,减少上下文切换 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="用协程代替线程,减少上下文切换">
+            
+            用协程代替线程,减少上下文切换
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/协程/">协程</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/05/02</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                552</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在开发工作中，遇到一些串行处理比较耗时的任务，我会想到用多线程，切片并行执行，已减少请求响应时间，提高吞吐量。可是，开辟线程也是需要消耗系统内存的，一个线程的线程栈，JVM默认配置1M左右，线程栈的内存的上限 只受操作系统的内存限制，所以线程创建过多，会在JVM的LOG日志看到这一行</p>
+<pre><code>java.lang.OutOfMemoryError: unable to create new native thread
+</code></pre><p>，通常我们使用的线程池来管理和监控线程,使用线程池注意的地方参考<a href="https://huangchunwu.github.io/2019/04/30/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%AE%B9%E6%98%93%E8%A2%AB%E5%BF%BD%E7%95%A5%E7%9A%84%E5%9C%B0%E6%96%B9/" target="_blank" rel="noopener">线程池容易被忽略的地方</a>。</p>
+<p>话说回来，我们创建线程，就能提高性能吗？创建线程数一般根据CPU的个数来设置的。**一个CPU只会同时支持一个线程运行，CPU根据分配的时间片（单位几十MS）运行该线程，到了这个时间片后，有二种情况：</p>
+<ol>
+<li>这个线程任务执行完了，则释放CPU</li>
+<li>这个线程的任务还没有执行完，则CPU也会强行释放服务其他线程了，并将该线程塞到等待队列等待下次调度，在很短的时间后该线程又获得了CPU调度，CPU根据上次的状态（对应JVM的谈到的程序计数器），继续执行下去，这一个周期叫做上下文切换**，由此可见CPU上下文切换影响线程执行效率。</li>
+</ol>
+<h2 id="如何定量分析上下文切换次数呢？"><a href="#如何定量分析上下文切换次数呢？" class="headerlink" title="如何定量分析上下文切换次数呢？"></a>如何定量分析上下文切换次数呢？</h2><p>Linux提供了性能检测工具，使用<code>vmstat</code>可以测量上下文切换的次数。</p>
+<pre><code>root@ubuntu:~# vmstat 2 1
+</code></pre><ul>
+<li>第一个参数是采样的时间间隔数，单位是秒</li>
+<li>第二个参数是采样的次数</li>
+</ul>
+<p>运行后有如下参数：</p>
+<pre><code> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us 
+</code></pre><blockquote>
+<p>r<br>表示运行队列(就是说多少个进程真的分配到CPU)，当这个值超过了CPU数目，就会出现CPU瓶颈了。如果运行队列过大，表示你的CPU很繁忙，一般会造成CPU使用率很高。</p>
+</blockquote>
+<blockquote>
+<p>cs<br>每秒上下文切换次数，线程的切换，也要进程上下文切换，这个值要越小越好，太大了，要考虑调低线程或者进程的数目，上下文切换次数过多表示你的CPU大部分浪费在上下文切换，导致CPU干正经事的时间少了，CPU没有充分利用，是不可取的。</p>
+</blockquote>
+<h2 id="那么如何减少上下文切换呢？"><a href="#那么如何减少上下文切换呢？" class="headerlink" title="那么如何减少上下文切换呢？"></a>那么如何减少上下文切换呢？</h2><ul>
+<li>可以想到的是，增加CPU，当然增加了硬件的成本，老板不同意的。</li>
+<li>另一个容易就是想到的，减少线程数，这个只能视业务而定。</li>
+<li>再一个就是无锁编程，锁会增大线程上下文切换的次数。</li>
+<li>还有一个该提到的就是CAS，JDK里原子类和并发包都有应用。</li>
+<li><strong>最后提到的是，用<code>协程</code>代替线程</strong>。</li>
+</ul>
+<h2 id="那么什么是协程呢？"><a href="#那么什么是协程呢？" class="headerlink" title="那么什么是协程呢？"></a>那么什么是协程呢？</h2><p>协程跟线程的用法相似，对于我们JAVA党不熟悉，但在golang,kotlin 1.30，python:都有原生的支持了。具体用法参考<a href="http://www.apkbus.com/blog-942559-79349.html" target="_blank" rel="noopener">聊一聊 Java-协程 那些事</a>,我目前的水平还达不到解说，值得提的是如下几点：</p>
+<pre><code>对于那些需要CPU长时间计算的代码，很少遇到阻塞的时候，就应该首选thread。
+当代码经常会被等待其它资源的阻塞的时候，就应该使用协程
+
+</code></pre><h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><a href="https://wangchangchung.github.io/2017/05/30/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E2%80%94CPU%E8%B0%83%E5%BA%A6/" target="_blank" rel="noopener">操作系统——CPU调度</a><br><a href="https://juejin.im/post/5c37377351882525ec200f9e" target="_blank" rel="noopener">从 synchronized 到 CAS 和 AQS - 彻底弄懂 Java 各种并发锁</a><br><a href="https://www.cnblogs.com/ggjucheng/archive/2012/01/05/2312625.html" target="_blank" rel="noopener">Linux vmstat命令实战详解</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/05/03/缓存击穿/" class="pre-post btn btn-default" title='如何实现缓存击穿，只允许一条线程去DB更新数据'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            如何实现缓存击穿，只允许一条线程去DB更新数据</span>
+    </a>
+    
+    
+    <a href="/2019/04/30/线程池容易被忽略的地方/" class="next-post btn btn-default" title='线程池容易被忽略的地方'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            线程池容易被忽略的地方</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何定量分析上下文切换次数呢？"><span class="toc-text">如何定量分析上下文切换次数呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么如何减少上下文切换呢？"><span class="toc-text">那么如何减少上下文切换呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#那么什么是协程呢？"><span class="toc-text">那么什么是协程呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附录"><span class="toc-text">附录</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

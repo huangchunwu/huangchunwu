@@ -1,0 +1,304 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="HashMap,源码分析">
+
+
+<meta name="description" content="背景最近忙着面试，把学习的东西，通过博客沉淀下来，一方面加深自己的理解，另方面方便以后自己再次复习。HashMap 是面试喜欢问的问题，那么HashMap的原理是什么呢？
+
+HashMap原理H...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    HashMap的源码解析 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="HashMap的源码解析">
+            
+            HashMap的源码解析
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/HashMap/">HashMap</a> <a class="tag-link" href="/tags/源码分析/">源码分析</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/05/09</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                544</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近忙着面试，把学习的东西，通过博客沉淀下来，一方面加深自己的理解，另方面方便以后自己再次复习。HashMap 是面试喜欢问的问题，那么HashMap的原理是什么呢？</p>
+<hr>
+<h2 id="HashMap原理"><a href="#HashMap原理" class="headerlink" title="HashMap原理"></a>HashMap原理</h2><p>HashMap的数据结构是 数组+链表。 </p>
+<p>数组默认大小等于16，这个数组也称Hash桶。<br>链表是存放Hash冲突的entry对象的。这里该提到数据结构的hash冲突的几种解决方法，hashMap采用的是链地址法。</p>
+<pre><code>
+hash冲突解决的常见办法：
+
+1.开放定址法
+2.再哈希法
+3.链地址法
+4.建立公共溢出区
+
+</code></pre><h2 id="怎么处理hash冲突"><a href="#怎么处理hash冲突" class="headerlink" title="怎么处理hash冲突"></a>怎么处理hash冲突</h2><p>当我们向HashMap put一个KV时候，先对KEY做hashCode,为了减少hash冲撞的机会，还经过了扰动函数计算，让hash的更均匀。<strong>jdk7在这里扰动了4次而JDK8，做了简化。</strong></p>
+<p>计算出来的hashcode与数组的容量进行与运算代替模运算，  因为hash桶只有16个，因此出现hash冲撞的可能性会增大。通过位运算后的值即为key-value存放的位置。当出现hash冲撞的时候，hashmap会将新进来的值塞进链表的尾部，当hash冲撞的机会高的时候，链表的长度也会增大，我们知道链表的查询的时间复杂度是N，jdk8在这里做了改进，具体为当链表长度大于8的时候，会转为红黑树，红黑树的特点是平衡二叉树，查询的时间复杂度是logn. </p>
+<h2 id="怎么扩容呢？"><a href="#怎么扩容呢？" class="headerlink" title="怎么扩容呢？"></a>怎么扩容呢？</h2><p>当hashMap的数组容量超过自己的0.75的时候，也就是默认容量16*0.75=12个的时候，则会进行一次扩容，这里的0.75就是<strong>加载因子</strong>，12就是<strong>阈值</strong>。<br>扩容的复杂度很高，先扩容，再移动旧的数组的值到新的数组去，性能会很低,所以我们要减少hashmap的扩容次数，初始化的时候，尽量设置初始容量。接下来，我们看看扩容的过程，先复制一个原来2倍容量的数组，然后重新计算key<br>的hash值，将旧数据搬到新的数组中去，这时候如果有新的数据进来也会插入尾部，会出现争抢位置的并发问题，而HashMap是线程不安全的。</p>
+<h2 id="hashMap线程安全的实现方式"><a href="#hashMap线程安全的实现方式" class="headerlink" title="hashMap线程安全的实现方式"></a>hashMap线程安全的实现方式</h2><p>线程安全的hashMap，使用concurrentHashMap,这个类是基于分段锁。实现HashMap线程安全还有另外一种方法，Collections.synchronized(new HashMap()),但是这种是全部方法加锁的，跟hashtable一样，锁粒度大，效率不好。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/05/10/如何写一个程序频繁的FULL-GC/" class="pre-post btn btn-default" title='如何写一个程序频繁的FULL GC'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            如何写一个程序频繁的FULL GC</span>
+    </a>
+    
+    
+    <a href="/2019/05/07/Spring多个AOP多注解执行顺序是怎么样的/" class="next-post btn btn-default" title='Spring多个AOP多注解执行顺序是怎么样的'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            Spring多个AOP多注解执行顺序是怎么样的</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap原理"><span class="toc-text">HashMap原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎么处理hash冲突"><span class="toc-text">怎么处理hash冲突</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎么扩容呢？"><span class="toc-text">怎么扩容呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hashMap线程安全的实现方式"><span class="toc-text">hashMap线程安全的实现方式</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

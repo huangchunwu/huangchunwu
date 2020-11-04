@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="棉花糖">
+
+
+<meta name="description" content="JAVA程序发布的时候，最常见的是会编译成war包，又或者jar包。
+war包是用来发布带网页JSP等的程序，而只是一些Java和配置文件组成的服务程序只需要jar则可以，war部署在Tomca...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    解决服务器宕机重启，Java服务不能自启动的问题 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="解决服务器宕机重启，Java服务不能自启动的问题">
+            
+            解决服务器宕机重启，Java服务不能自启动的问题
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/棉花糖/">棉花糖</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/08/21</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                441</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>JAVA程序发布的时候，最常见的是会编译成war包，又或者jar包。</p>
+<p>war包是用来发布带网页JSP等的程序，而只是一些Java和配置文件组成的服务程序只需要jar则可以，war部署在Tomcat下面，jar包只要在命令行敲个命令 java -jar demo.jar 则可，多么清晰干脆。命令行操作，带来二个问题</p>
+<pre><code class="java">1:运营人员不小心关闭了命令行，服务则关闭了，这种在window下常见
+2:当服务器异常重启，Java服务是不能自动重启的，那么怎么解决呢？
+</code></pre>
+<h3 id="Java-Service-Wrapper"><a href="#Java-Service-Wrapper" class="headerlink" title="Java Service Wrapper"></a>Java Service Wrapper</h3><p><strong>wrapper </strong> 包装的意思，就是将jar包装成windows或者Linux的服务，这样服务器重启也会随着服务器服务一起重启。 </p>
+<p>使用java service wrapper 只需要简单的配置，无需添加任何代码，无侵入性。</p>
+<p><a href="http://wrapper.tanukisoftware.com/doc/english/download.jsp" target="_blank" rel="noopener">Java Service Wrapper</a>  入手很简单，主要有以下几个目录</p>
+<pre><code class="shell">- demo-service
+  -bin   # 启动demo服务的地方
+   - run.sh # 启动文件
+   - wrapper #wrapper系统文件
+  -lib   # 将demo服务的jar放进来
+   - wrapper.jar
+   - libwrapper.so
+   - logback**
+  -conf  # 启动demo的一些配置文件 
+    -wrapper.conf  # wrapper配置文件
+    -logback.xml  # logback日志配置
+  -logs  # demo服务的日志
+    - demo-20190821.log  #应用日志
+    - wrapper-2019-08-21.log #wrapper日志
+</code></pre>
+<ol>
+<li>run.sh  </li>
+</ol>
+<pre><code class="xml">*******省略***********************
+# Wrapper
+WRAPPER_CMD=&quot;./wrapper&quot;
+WRAPPER_CONF=&quot;../conf/wrapper.conf&quot;
+*******省略***********************
+</code></pre>
+<p>2：wrapper.conf</p>
+<pre><code class="xml">****
+wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleApp
+set.default.REPO_DIR=lib  # 设置LIB环境变量
+set.APP_BASE=.
+
+# Java Classpath (include wrapper.jar)  Add class path elements as
+#  needed starting from 1
+wrapper.java.classpath.1=lib/wrapper.jar
+wrapper.java.classpath.2=%REPO_DIR%/* # 指定LIB目录
+
+# Java Library Path (location of Wrapper.DLL or libwrapper.so)
+wrapper.java.library.path.1=lib
+
+# Java Bits.  On applicable platforms, tells the JVM to run in 32 or 64-bit mode.
+wrapper.java.additional.auto_bits=TRUE
+
+# Java Additional Parameters
+wrapper.java.additional.1=-Dlogback.configurationFile=file:conf/logback.xml # 指定日志配置文件
+
+# Initial Java Heap Size (in MB)
+wrapper.java.initmemory=256  # 指定JAVA堆初始化大小
+
+# Maximum Java Heap Size (in MB)
+wrapper.java.maxmemory=1024 # 指定JAVA堆最大内存
+
+# Application parameters.  Add parameters as needed starting from 1
+wrapper.app.parameter.1=cn.hcw.gc.GcExample # 指定main函数
+
+#********************************************************************
+# Wrapper Logging Properties
+#********************************************************************
+# Enables Debug output from the Wrapper.
+# wrapper.debug=TRUE
+
+# Format of output for the console.  (See docs for formats)
+wrapper.console.format=PM
+
+# Log Level for console output.  (See docs for log levels)
+wrapper.console.loglevel=INFO
+
+# Log file to use for wrapper output logging.
+wrapper.logfile=logs/wrapper-YYYYMMDD.log # 指定系统日志格式
+wrapper.logfile.rollmode=DATE # 指定日志按日期分割
+
+# Format of output for the log file.  (See docs for formats)
+wrapper.logfile.format=LPTM
+
+# Log Level for log file output.  (See docs for log levels)
+wrapper.logfile.loglevel=INFO
+
+# Maximum size that the log file will be allowed to grow to before
+#  the log is rolled. Size is specified in bytes.  The default value
+#  of 0, disables log rolling.  May abbreviate with the &#39;k&#39; (kb) or
+#  &#39;m&#39; (mb) suffix.  For example: 10m = 10 megabytes.
+wrapper.logfile.maxsize=500 # 指定日志文件内存最大大小
+
+*******省略***********************
+
+# Name of the service
+wrapper.name=demo-app-service
+
+# Display name of the service
+wrapper.displayname=demo-app-service Application
+
+# Description of the service
+wrapper.description=demo-app-service Description
+
+# Service dependencies.  Add dependencies as needed starting from 1
+wrapper.ntservice.dependency.1=
+
+# Mode in which the service is installed.  AUTO_START, DELAY_START or DEMAND_START
+wrapper.ntservice.starttype=AUTO_START
+
+# Allow the service to interact with the desktop (Windows NT/2000/XP only).
+wrapper.ntservice.interactive=FALSE
+
+
+</code></pre>
+<p>以上文件可以参加源码下载运行，至此，Java Service Wrapper 搭建成功，服务可以启动了。</p>
+<p>在Linux下执行命令</p>
+<pre><code class="she">./run.sh start # 启动
+./run.sh status # 服务运行状态
+./run.sh stop #停止服务
+</code></pre>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p><a href="https://github.com/huangchunwu/Java-Service-Wrapper-demo.git" target="_blank" rel="noopener">Java Service Wrapper</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/09/05/javabox/" class="pre-post btn btn-default" title='装箱与拆箱的性能差距'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            装箱与拆箱的性能差距</span>
+    </a>
+    
+    
+    <a href="/2019/08/15/decimal/" class="next-post btn btn-default" title='关于BigDecimal除法的踩坑记录'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            关于BigDecimal除法的踩坑记录</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Java-Service-Wrapper"><span class="toc-text">Java Service Wrapper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码"><span class="toc-text">源码</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

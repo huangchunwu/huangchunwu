@@ -1,0 +1,355 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="Spring">
+
+
+<meta name="description" content="问题的背景在途牛，庆幸的是遇到了几个很正面的人，我也是从阅读其中一位同事的博客才发现了spring声明式事务的这个坑，说实话，我平时开发很少用事务，因为不好控制粒度，事务也是高并发的绊脚石。
+
+...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    spring声明式事务失效的分析过程 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="spring声明式事务失效的分析过程">
+            
+            spring声明式事务失效的分析过程
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/Spring/">Spring</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2018/12/16</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                689</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h3 id="问题的背景"><a href="#问题的背景" class="headerlink" title="问题的背景"></a>问题的背景</h3><p>在途牛，庆幸的是遇到了几个很正面的人，我也是从阅读其中一位同事的博客才发现了spring声明式事务的这个坑，说实话，我平时开发很少用事务，因为不好控制粒度，事务也是高并发的绊脚石。</p>
+<hr>
+<h3 id="问题的现象"><a href="#问题的现象" class="headerlink" title="问题的现象"></a>问题的现象</h3><p>为了理解方便，下面我用伪代码说明问题详细</p>
+<pre><code class="javascript">Class exampleService{
+    //不加事务，本身不需要事务介入
+   public void methodA（）{
+      //耗时操作
+      ······
+     //调用B
+      methodB（）；
+      ······
+   }
+    //声明了事务
+   @Transactional 
+   public void methodB（）{
+      insert();
+      throw new RuntimeException(&quot;操作db失败&quot;)
+   }
+}
+</code></pre>
+<p>运行完代码后，现象是发现methodB的插入的数据没有回滚，像我一样不知道的同学就纳闷了，下面来具体分析下为啥出现事务无效的现象。</p>
+<hr>
+<h3 id="问题的分析"><a href="#问题的分析" class="headerlink" title="问题的分析"></a>问题的分析</h3><p>这里来复习一下spring的声明式事务，无非就是spring的二大核心之一：AOP。</p>
+<blockquote>
+<p>AOP的实现原理是java的动态代理。</p>
+</blockquote>
+<blockquote>
+<p>spring实现动态代理有二种方式，其中一个就是cglib，另一个是jdk代理。</p>
+</blockquote>
+<blockquote>
+<p>cglib的原理是jvm调用native方法即ASM，操作class字节码另生成代理类。</p>
+</blockquote>
+<blockquote>
+<p>AOP注解的方法，生成的代理类，并在方法执行前，加入事务的开启，执行后加入事务提交操作</p>
+</blockquote>
+<p>基于这些认知，我们看spring的声明式事务为什么失效。<br>exampleService有二个方法：methodA 是普通方法，methodB是另一个声明了事务方法，class编译出了一个AOP代理类exampleServiceProxy,<br>上述出现问题的调用关系是：</p>
+<pre><code>exampleService.methodA（）调用的是内部方法exampleService.methodB().
+由此看出methodB并没有被Proxy类通知到。
+</code></pre><p>正确的调用关系是：</p>
+<pre><code>exampleServiceProxy.methodA()--&gt;exampleServiceProxy.methodB().
+</code></pre><hr>
+<h3 id="怎么避免此类问题"><a href="#怎么避免此类问题" class="headerlink" title="怎么避免此类问题"></a>怎么避免此类问题</h3><p>知道了原理，我们解决此类问题的方法，要么是新建一个类并将methodB移进来。<br>要么是用编程式事务。</p>
+<hr>
+<h3 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h3><blockquote>
+<p>说下最近发生的事情，不喜跳过。这段时间工作比较忙，每天有6个小时的有效工作时间，在和南京总部的度假团队，一起开发火车票改签项目，说下这个项目的感受，又是一堆的CURD，这也是敲业务代码的弊端。我想避免温水煮青蛙，突破一下自己，改变了以往的开发习惯，先把以前大冰哥的改签代码，用Visio将业务流程画了一遍，我也不清楚这样有什么好处，有个“上海交大”的同事告诉我这样用处大，只能自己体会，我想人家那么优秀的学历说的话总归有点道理的。等我画完整个流程图后，渐渐的有了点启发，一边心里骂着之前代码结构的设计，一边寻思着开始代码的重构,目前正在紧张的开发中。回过头来想画流程图的好处，我就觉得，看代码的速度放慢了，思考空间也更大了些，于是启发就更多了些。</p>
+</blockquote>
+<hr>
+<p>5/8号<br>昨天面试的时候，被面试官问到这块知识，面试官问如果获取代理对象的目标对象？我不知道了，不过现在知道了。<br>像上面那类问题，另外一个解决方案就是，直接获取spring容器的代理对象：</p>
+<pre><code class="javascript">Class exampleService{
+    //不加事务，本身不需要事务介入
+   public void methodA（）{
+      //耗时操作
+      ······
+     //调用B
+     ((BaseClass)SpringUtil.getBean(&quot;exampleService&quot;)).methodB（）；
+      ······
+   }
+    //声明了事务
+   @Transactional 
+   public void methodB（）{
+      insert();
+      throw new RuntimeException(&quot;操作db失败&quot;)
+   }
+}
+</code></pre>
+<p>如果获取代理对象的目标对象？我不好用语言表达清楚，先贴个别人写的解答吧<br><a href="https://jinnianshilongnian.iteye.com/blog/1613222" target="_blank" rel="noopener">在spring中获取代理对象代理的目标对象工具类</a></p>
+<p>参考资料：<br><a href="http://www.cnblogs.com/nnngu/p/8627662.html" target="_blank" rel="noopener">Spring的编程式事务和声明式事务</a><br><a href="https://www.cnblogs.com/lcngu/p/5339555.html" target="_blank" rel="noopener">Spring aop的实现原理</a><br><a href="https://www.cnblogs.com/flyingeagle/articles/7102282.html" target="_blank" rel="noopener">Java动态代理机制详解（JDK 和CGLIB，Javassist，ASM）</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2018/12/20/softdesign/" class="pre-post btn btn-default" title='结合项目，谈谈软件设计原则'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            结合项目，谈谈软件设计原则</span>
+    </a>
+    
+    
+    <a href="/2018/12/16/music/" class="next-post btn btn-default" title='推荐适合敲代码时候听的空灵音乐'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            推荐适合敲代码时候听的空灵音乐</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题的背景"><span class="toc-text">问题的背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题的现象"><span class="toc-text">问题的现象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题的分析"><span class="toc-text">问题的分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#怎么避免此类问题"><span class="toc-text">怎么避免此类问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#题外话"><span class="toc-text">题外话</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

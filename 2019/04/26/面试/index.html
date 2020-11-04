@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="面试,数据迁移">
+
+
+<meta name="description" content="今天去壹钱包面试，问了一些解决方案，被有道题目难住了。
+业务场景
+
+有个用户基础信息表，注册的时候，用户的手机号当前是明文保存在db，用户信息泄露的问题影响是不能容忍的，安全部要求把这个明文手机...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    如何平滑数据迁移不影响服务的可用性 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="如何平滑数据迁移不影响服务的可用性">
+            
+            如何平滑数据迁移不影响服务的可用性
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/数据迁移/">数据迁移</a> <a class="tag-link" href="/tags/面试/">面试</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/04/26</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                557</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>今天去壹钱包面试，问了一些解决方案，被有道题目难住了。</p>
+<p>业务场景</p>
+<blockquote>
+<p>有个用户基础信息表，注册的时候，用户的手机号当前是明文保存在db，用户信息泄露的问题影响是不能容忍的，安全部要求把这个明文手机号改成密文，但是我们号称是24*7小时全天服务的公司，为保证系统可用性，请出个方案，平滑的将明文数据改成密文数据。</p>
+</blockquote>
+<p>初看这道题，觉得很简单。这里涉及到新老数据共存的问题。<br>我当时提出的方案是这样的：</p>
+<blockquote>
+<p>老用户数据加个是否加密的标示。新用户直接执行加密，存db。老用户查询的时候用明文，查询完，将明文转成秘文，更新到db并且标志位更新成秘文。<br>再加个补偿任务，降漏掉的明文改成秘文。</p>
+</blockquote>
+<p>无疑，太粗暴了。当系统发布的过程中，原逻辑代码的实例与加密的新实例，如果收到并发的2个同样手机的请求来，会导致重复手机号注册的问题。当时没有思绪，面试官让我回家想。。。</p>
+<p>后来回到家，经过跟瑞强讨论，拿到了如下的解决方案。</p>
+<p>时间换空间</p>
+<pre><code>分四步
+1：加另一张表，跟原来表结构一样，用于存密文。
+2：然后代码增加一个同步数据的功能，将明文转成密文同步到新表去。
+然后新代码发布的过程中，老代码的服务可能存在的情况就是没有把数据同步到新表去，
+新代码的数据 老表跟新表都有。
+3：然后等待系统发布稳定后，再写个脚本将旧表数据 加密同步到新表去。
+4：切换业务代码到新表，删除旧表
+</code></pre><p>   我回复了面试的答案，面试官说，也是一种思路。他用一句话总结：“两个表双写是一个思路，本质上就是新老不能混在一起，为达到这个目的手段可以有多个” </p>
+<hr>
+<p>2019/4/28   </p>
+<p>这二天，看了下架构方便的博客，看到了58沈剑的文章有提到这块关于<a href="http://www.10tiao.com/html/249/201703/2651959992/1.html" target="_blank" rel="noopener">“100亿数据平滑数据迁移,不影响服务”</a>的介绍,才明白，上面提到的解决方案，名叫“双写法”，这个方案是不完善的，体现在：<br><strong>数据迁移后，先写个校对数据校验工具保证新旧表的数据一致性，再切新表。</strong></p>
+<blockquote>
+<p>在一个极端的情况下，在数据迁移过程中，当提取旧表的某一条记录A，准备迁移到新表，这时候旧表进行了delete A的操作，这时候双写的时候，新表还没有A的记录，这就导致了新表多了一条数据，所以数据校对一致性工具还是必要的。</p>
+</blockquote>
+<p>另外学到了另外一套新的迁移方法，个人觉得比较麻烦。追日志法，可以看下这篇文章的介绍。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/04/27/uml/" class="pre-post btn btn-default" title='源码阅读利器-UML类图'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            源码阅读利器-UML类图</span>
+    </a>
+    
+    
+    <a href="/2019/04/25/mysql隔离级别/" class="next-post btn btn-default" title='MYSQL事务默认隔离级别为什么是可重复读'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            MYSQL事务默认隔离级别为什么是可重复读</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <p>暂无目录</p>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

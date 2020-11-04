@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="JVM">
+
+
+<meta name="description" content="基础知识32位的系统 进程内存限制最多2G？32 位寻址空间只有 4GB 大小，于是 32 位应用程序进程最大只能用到 4GB 的内存。然而，除了应用程序本身要用内存，操作系统内核也需要使用。应...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    JVM进程占用内存过高排查 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="JVM进程占用内存过高排查">
+            
+            JVM进程占用内存过高排查
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/JVM/">JVM</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/03/22</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                592</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="32位的系统-进程内存限制最多2G？"><a href="#32位的系统-进程内存限制最多2G？" class="headerlink" title="32位的系统 进程内存限制最多2G？"></a>32位的系统 进程内存限制最多2G？</h3><p>32 位寻址空间只有 4GB 大小，于是 32 位应用程序进程最大只能用到 4GB 的内存。然而，除了应用程序本身要用内存，操作系统内核也需要使用。应用程序使用的内存空间分为用户空间和内核空间，每个 32 位程序的用户空间可独享前 2GB 空间（指针值为正数），而内核空间为所有进程共享 2GB 空间（指针值为负数）。所以，32 位应用程序实际能够访问的内存地址空间最多只有 2GB。</p>
+<h3 id="JVM进程崩溃？"><a href="#JVM进程崩溃？" class="headerlink" title="JVM进程崩溃？"></a>JVM进程崩溃？</h3><p>1, 当超出JVM的分配的内存时，JAVA进程并不会退出只是结束当前的线程<br>2, 当服务器内存不够时，linux杀死使用内存的一个进程<br>3,  把系统拆分成多个服务部署在同一台机时需要特别注意，JVM启动时分配的内存只是申请（其实体现在VIRT），当一台服务器运行多个JAVA进程时请保留足够的可用内存 (大于分配给各个JVM的进程之和)</p>
+<h3 id="TOP命令参数"><a href="#TOP命令参数" class="headerlink" title="TOP命令参数"></a>TOP命令参数</h3><p>VIRT 虚拟内存中含有共享库、共享内存、栈、堆，所有已申请的总内存空间。<br>RES  是进程正在使用的内存空间(栈、堆)，申请内存后该内存段已被重新赋值。<br>SHR  是共享内存正在使用的空间。<br>SWAP 交换的是已经申请，但没有使用的空间，包括(栈、堆、共享内存)。<br>DATA 是进程栈、堆申请的总空间。</p>
+<h3 id="linux内存和JAVA堆中的关系"><a href="#linux内存和JAVA堆中的关系" class="headerlink" title="linux内存和JAVA堆中的关系"></a>linux内存和JAVA堆中的关系</h3><p>JAVA进程内存 = JVM进程内存+heap内存+ 永久代内存+ 本地方法栈内存+线程栈内存 +堆外内存 +socket 缓冲区内存</p>
+<p>RES = JAVA正在存活的内存对象大小 + 未回收的对象大小  + 其它</p>
+<p>VIART= JAVA中申请的内存大小，即 -Xmx  -Xms + 其它</p>
+<p>其它 = 永久代内存+ 本地方法栈内存+线程栈内存 +堆外内存 +socket 缓冲区内存 +JVM进程内存</p>
+<hr>
+<h2 id="怎么排查"><a href="#怎么排查" class="headerlink" title="怎么排查"></a>怎么排查</h2><p>a: 实时查看：</p>
+<pre><code>找到前30个最耗内存的对象：
+jmap -histo pid | head 30 （带上:live则表示先进行一次FGC再统计，如jmap -histo:live pid）
+</code></pre><p>b: 把heap文件dump下来分析：</p>
+<pre><code>jmap -dump:live,format=b,file=heap.bin pid （使用Eclipse mat分析）
+</code></pre><p>统计进程打开的句柄数：</p>
+<pre><code>ls /proc/pid/fd |wc -l
+</code></pre><p>统计进程打开的线程数：</p>
+<pre><code>ls /proc/pid/task |wc -l
+</code></pre><p>当前jvm线程数统计：</p>
+<pre><code>jstack pid |grep ‘tid’|wc –l  (linux 64位系统中jvm线程默认栈大小为1MB)
+</code></pre><p>查询堆内存分布情况：</p>
+<pre><code>jmap -heap pid
+</code></pre><p>查看进程内存 </p>
+<pre><code>pmap pid
+</code></pre><pre><code>第一列，内存块起始地址 
+第二列，占用内存大小 
+第三列，内存权限 
+第四列，内存名称，anon表示动态分配的内存，stack表示栈内存 
+最后一行，占用内存总大小，请注意，此处为虚拟内存大小，占用的物理内存大小可以通过top查看
+</code></pre><p>jstat命令查看jvm的GC情况</p>
+<pre><code>Options，选项，我们一般使用 -gcutil 查看gc情况 
+vmid，VM的进程号，即当前运行的java进程号 
+interval，间隔时间，单位为秒或者毫秒 
+count，打印次数，如果缺省则打印无数次
+</code></pre><blockquote>
+<p> jstat -gc pid 5000</p>
+</blockquote>
+<h2 id="JVM调优实战参考"><a href="#JVM调优实战参考" class="headerlink" title="JVM调优实战参考"></a>JVM调优实战参考</h2><hr>
+<p><a href="https://www.analysys.cn/article/detail/20019016" target="_blank" rel="noopener">jvm疯狂吞占内存，罪魁祸首是谁？</a><br><a href="https://jeffinbao.github.io/2016/04/24/20160424-research-on-java-memory-overweighted/" target="_blank" rel="noopener">记一次Java内存占用过大排查</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/03/26/jvm-class/" class="pre-post btn btn-default" title='类的加载机制与对象的实例化'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            类的加载机制与对象的实例化</span>
+    </a>
+    
+    
+    <a href="/2019/03/17/dingdingdev/" class="next-post btn btn-default" title='钉钉H5微应用开发总结'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            钉钉H5微应用开发总结</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#32位的系统-进程内存限制最多2G？"><span class="toc-text">32位的系统 进程内存限制最多2G？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM进程崩溃？"><span class="toc-text">JVM进程崩溃？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TOP命令参数"><span class="toc-text">TOP命令参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux内存和JAVA堆中的关系"><span class="toc-text">linux内存和JAVA堆中的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎么排查"><span class="toc-text">怎么排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM调优实战参考"><span class="toc-text">JVM调优实战参考</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="forkJoin">
+
+
+<meta name="description" content="框架思想当业务系统遇到要处理大任务的时候，可以拆分成小任务来执行，最后将小任务的执行结果汇总，返回给大任务，简称为“分而治之”，jdk7提供了forkJoin框架，Hadoop提供了MapRed...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    并行计算框架forkJoin框架 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="并行计算框架forkJoin框架">
+            
+            并行计算框架forkJoin框架
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/forkJoin/">forkJoin</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/01/25</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                648</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="框架思想"><a href="#框架思想" class="headerlink" title="框架思想"></a>框架思想</h2><p>当业务系统遇到要处理大任务的时候，可以拆分成小任务来执行，最后将小任务的执行结果汇总，返回给大任务，简称为“分而治之”，jdk7提供了forkJoin框架，Hadoop提供了MapReduce。</p>
+<hr>
+<h2 id="适合场景"><a href="#适合场景" class="headerlink" title="适合场景"></a>适合场景</h2><blockquote>
+<p>多核CPU服务器<br>CPU密集的应用，<br>并行计算的应用</p>
+</blockquote>
+<hr>
+<h2 id="主要方法"><a href="#主要方法" class="headerlink" title="主要方法"></a>主要方法</h2><h3 id="forkJoinTask-抽象类"><a href="#forkJoinTask-抽象类" class="headerlink" title="forkJoinTask 抽象类"></a>forkJoinTask 抽象类</h3><p>不直接使用，直接使用以下子类提供的fork与join方法</p>
+<blockquote>
+<p>RecursiveAction 无返回值<br>RecursiveTask 有返回值</p>
+</blockquote>
+<hr>
+<h3 id="forkJoinPool-线程池"><a href="#forkJoinPool-线程池" class="headerlink" title="forkJoinPool 线程池"></a>forkJoinPool 线程池</h3><p>提供了forkJoin线程池。每一个工作线程维护一份双端队列，队列里面存放待执行的任务，线程池内部使用“工作窃取算法”，即工作线程自己的队列任务处理完了，可以“窃取”其他线程的队列的任务去执行，提供的CPU利用率，所以工作线程不要用于IO流操作等超时任务。</p>
+<hr>
+<h3 id="工作窃取算法"><a href="#工作窃取算法" class="headerlink" title="工作窃取算法"></a>工作窃取算法</h3><p>每一个工作线程维护一份双端队列，当工作线程处理完自己的队列后，会窃取其他线程的队列帮忙处理，充分使用所有线程资源，直到处理完所有的队列，这才是特别的地方。</p>
+<hr>
+<h3 id="fork-Join框架基本模板"><a href="#fork-Join框架基本模板" class="headerlink" title="fork/Join框架基本模板"></a>fork/Join框架基本模板</h3><pre><code>if(任务足够小){
+    进行计算；
+}else{
+    将任务分为两个部分；
+    结合两个子任务结果；
+}
+</code></pre><h2 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h2><pre><code class="javascript">
+public class CountTask extends RecursiveTask&lt;Integer&gt; {
+
+
+    /**
+     * 临界值
+     */
+    private static final int THRESHOLD = 1000;
+
+    int start=0;
+    int end=100000;
+    int sum = 0;
+
+    public CountTask(int start,int end){
+        this.start = start;
+        this.end = end;
+    }
+
+
+
+    @Override
+    protected Integer compute() {
+
+        if (end-start&lt;THRESHOLD){
+            for (int i=start;i&lt;end;i++){
+                sum += i;
+            }
+        }else {
+            int middle = (start + end)/2;
+
+            RecursiveTask&lt;Integer&gt; left_task =  new CountTask(start,middle);
+            RecursiveTask&lt;Integer&gt; right_task =  new CountTask(middle,end);
+
+            invokeAll(left_task,right_task);
+
+            sum = left_task.join() + right_task.join();
+        }
+        return sum;
+    }
+}
+
+
+/**
+ * 分而治之
+ * forkjoin 线程池是双端队列，采用窃取算法
+ * Created by huangchunwu on 2019/1/21.
+ */
+public class ForkJoinTaskTest {
+
+
+    @Test
+    public  void testInvokeForkPool(){
+        // 创建一个通用池，这个是jdk1.8提供的功能
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+
+        long startTime = System.currentTimeMillis();
+        ForkJoinTask task = new CountTask(1,999999999);
+        Integer result = (Integer) pool.invoke(task);
+        long endTime = System.currentTimeMillis();
+        System.out.println(&quot;Fork/join sum: &quot; + result + &quot; in &quot; + (endTime - startTime) + &quot; ms.&quot;);
+    }
+
+
+    @Test
+    public  void testsubmitForkPool(){
+        // 创建一个通用池，这个是jdk1.8提供的功能
+        ForkJoinPool pool = ForkJoinPool.commonPool();
+
+        long startTime = System.currentTimeMillis();
+        ForkJoinTask task = new CountTask(1,999999999);
+        pool.submit(task);
+        Integer result =0;
+        try {
+            result = (Integer) task.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(&quot;Fork/join sum: &quot; + result + &quot; in &quot; + (endTime - startTime) + &quot; ms.&quot;);
+    }
+}
+
+</code></pre>
+<hr>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://www.cnblogs.com/jinggod/p/8490511.html" target="_blank" rel="noopener">Fork-Join分治编程介绍（一）</a><br><a href="https://github.com/huangchunwu/own" target="_blank" rel="noopener">示例源码</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/02/02/swtools/" class="pre-post btn btn-default" title='【在线工具】思维导图在线工具'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            【在线工具】思维导图在线工具</span>
+    </a>
+    
+    
+    <a href="/2019/01/15/guava-cache/" class="next-post btn btn-default" title='Guava Cache 学习记录'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            Guava Cache 学习记录</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#框架思想"><span class="toc-text">框架思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#适合场景"><span class="toc-text">适合场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#主要方法"><span class="toc-text">主要方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#forkJoinTask-抽象类"><span class="toc-text">forkJoinTask 抽象类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#forkJoinPool-线程池"><span class="toc-text">forkJoinPool 线程池</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工作窃取算法"><span class="toc-text">工作窃取算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fork-Join框架基本模板"><span class="toc-text">fork/Join框架基本模板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现代码"><span class="toc-text">实现代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

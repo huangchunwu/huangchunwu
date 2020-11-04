@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="分布式事务,分布式一致性">
+
+
+<meta name="description" content="为解决单机系统的性能瓶颈，无论我们根据业务垂直拆分系统，还是水平分库分表，都会面临分布式事务的问题。解决此类分布式事务的场景，业内已经提出了一致性原理，如数据库单机的ACID，到后面提出的CAP...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    从分布式事务理论，总结途牛火车票的解决方案 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="从分布式事务理论，总结途牛火车票的解决方案">
+            
+            从分布式事务理论，总结途牛火车票的解决方案
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/分布式一致性/">分布式一致性</a> <a class="tag-link" href="/tags/分布式事务/">分布式事务</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/05/22</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                532</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>为解决单机系统的性能瓶颈，无论我们根据业务垂直拆分系统，还是水平分库分表，都会面临分布式事务的问题。解决此类分布式事务的场景，业内已经提出了一致性原理，如数据库单机的ACID，到后面提出的CAP和BASE定理，继而提出了一致性协议，如2PC,3PC,TCC，最后总结出实现最终一致性的方案。</p>
+<ul>
+<li>查询模式</li>
+<li>补偿模式</li>
+<li>异步确保模式</li>
+<li>定期校对模式</li>
+<li>支持事务的MQ</li>
+</ul>
+<p>那么我做了三年的途牛火车票系统采用的是什么解决方案呢？我们用的也是业界常用的<em>异步确保模式</em></p>
+<pre><code>异步确保模式核心理论是  将分布式事务转成本地事务处理，具体做法就是在每个业务系统维护一个本地消息记录表，
+每次发起请求，记录下请求消息状态，也就是将业务数据与消息表放在一个数据库事务中提交，
+系统之间可以使用MQ来传递消息，如果消费失败，或者消息没有发送出去，则通过消息表进行补偿。
+
+</code></pre><p><img src="/images/分布式事务.png" alt="分布式事务"></p>
+<p>异步确保模式的弊端就是维护了一份冗余的消息表，需要渗透到业务代码，不过先人也为我们考虑好了解决方案，这一块对消息表的操作已经被封装到rpc客户端的底层代码维护 ，业务系统无需要关心这块的处理。</p>
+<h2 id="途牛火车票的实践"><a href="#途牛火车票的实践" class="headerlink" title="途牛火车票的实践"></a>途牛火车票的实践</h2><p>途牛火车票系统之间，每个系统都有一个请求日志表，系统之间本质是http作为通信协议，底层封装了tsp的客户端请求工具，分布式事务是靠业务方自己实现本地消息表的方案，<br>比如我负责的订单系统，占位，出票，退票，都有记录系统之间的日志表，然后通过日志表的状态进行选择重试或者之间结束流程，以确保系统的最终一致性。<br>比如有一堆订单卡在中间状态，比如占位中，如果消息表没有记录，或者是同步没有反馈，又或者是同步反馈失败，订单系统作为上游系统直接对客失败处理。</p>
+<p>这样的系统设计还存在哪些优点与缺点？</p>
+<ol>
+<li>生产者/消费者的消息持久化，防止消息丢失</li>
+<li>消息表的定期清理，防止数据量过多影响查询性能。</li>
+<li>业务数据与消费发送MQ要在一个事务内执行，确保消息的可靠性。</li>
+<li>不支持回滚，依托BASE理论，保证最终一致性</li>
+</ol>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><a href="https://www.cnblogs.com/savorboard/p/distributed-system-transaction-consistency.html" target="_blank" rel="noopener">聊聊分布式事务，再说说解决方案</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/06/16/ActiveMq的Topic消息模式，订阅者宕机重启，消息丢失的解决方案/" class="pre-post btn btn-default" title='ActiveMq的Topic消息模式，订阅者宕机重启，消息丢失的解决方案'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            ActiveMq的Topic消息模式，订阅者宕机重启，消息丢失的解决方案</span>
+    </a>
+    
+    
+    <a href="/2019/05/21/可以暂停的线程池/" class="next-post btn btn-default" title='可以暂停的线程池'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            可以暂停的线程池</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#途牛火车票的实践"><span class="toc-text">途牛火车票的实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附录"><span class="toc-text">附录</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

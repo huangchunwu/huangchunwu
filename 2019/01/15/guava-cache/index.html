@@ -1,0 +1,438 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="缓存,Guava">
+
+
+<meta name="description" content="为什么使用Guava Cache？guava cache属于JVM内存的缓存,其实JAVA本地缓存框架有ecache，简单点有HashMap作为缓存容器,那么，为什么推荐用guava cache...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    Guava Cache 学习记录 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Guava Cache 学习记录">
+            
+            Guava Cache 学习记录
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/Guava/">Guava</a> <a class="tag-link" href="/tags/缓存/">缓存</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/01/15</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                658</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="为什么使用Guava-Cache？"><a href="#为什么使用Guava-Cache？" class="headerlink" title="为什么使用Guava Cache？"></a>为什么使用Guava Cache？</h2><p>guava cache属于JVM内存的缓存,其实JAVA本地缓存框架有ecache，简单点有HashMap作为缓存容器,那么，为什么推荐用guava cache呢,比如以下：<br>1、设置缓存的过期时间,遵循LRU原则移除过期KEY<br>2、缓存的定期刷新<br>3、如何防止缓存穿透</p>
+<p>LRU原则是指 Least Recently Used  最近最少使用,即活性不高的缓存会被淘汰掉</p>
+<p>如果自己实现起来难度较大，谷歌开发对缓存操作作了封装，方便研发的重心集中在业务处理，无需关心底层实现，无需重复造轮子。</p>
+<p>我们常用的是redis可以实现分布式缓存，为什么推荐用guava cache呢<br>1、同时造成了业务系统 强依赖于网络和redis服务器的稳定性<br>2、网络请求的效率远远没有本地内存快。</p>
+<hr>
+<h2 id="哪些场景适合使用Guava-cache"><a href="#哪些场景适合使用Guava-cache" class="headerlink" title="哪些场景适合使用Guava cache"></a>哪些场景适合使用Guava cache</h2><p>通常缓存的用法，先请求本地缓存，如果本地缓存未命中，则去请求DB。<br>Guava cache 是本地缓存，所以适合数据量小的数据量的情况下使用。</p>
+<hr>
+<h2 id="Guava-cache特性"><a href="#Guava-cache特性" class="headerlink" title="Guava cache特性"></a>Guava cache特性</h2><p>1、缓存不会自动刷新，需满足2个条件，<code>过期了</code>，<code>有get请求</code></p>
+<pre><code>    static ListeningExecutorService executorService =
+            MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+
+    // remove listener
+    static RemovalListener&lt;String, Integer&gt; removalListener = new RemovalListener&lt;String, Integer&gt;() {
+        public void onRemoval(RemovalNotification&lt;String, Integer&gt; removal) {
+            System.out.println(DateUtils.time() +&quot;cause:&quot; + removal.getCause() + &quot; key:&quot; + removal.getKey() + &quot; value:&quot;
+                    + removal.getValue());
+        }
+    };
+
+    final static LoadingCache&lt;String, Integer&gt; loadingCache = CacheBuilder.newBuilder()
+            .maximumSize(10)  //最多存放十个数据
+         // .expireAfterWrite(3, TimeUnit.SECONDS)  //缓存200秒
+            .refreshAfterWrite(1, TimeUnit.SECONDS)
+            .removalListener(removalListener)
+            .recordStats()   //开启 记录状态数据功能
+            .build(new CacheLoader&lt;String, Integer&gt;() {
+                //数据加载，默认返回-1,也可以是查询操作，如从DB查询
+                @Override
+                public Integer load(String key) throws Exception {
+                    System.out.println(DateUtils.time() + &quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;load&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;);
+                    return -1;
+                }
+
+                //有些键不需要刷新，并且我们希望刷新是异步完成的
+                @Override
+                public ListenableFuture&lt;Integer&gt; reload(final String key, final Integer oldValue) {
+                    System.out.println(DateUtils.time() + &quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;reload&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;);
+                    // we need to load new values asynchronously, so that calls to read values from the cache don&#39;t block
+                    ListenableFuture&lt;Integer&gt; listenableFuture = executorService.submit(new Callable&lt;Integer&gt;() {
+                        @Override
+                        public Integer call() throws Exception {
+                            try {
+                                Integer value = load(key);
+                                return value;
+                            } catch (Exception ex) {
+                                return oldValue;
+                            } finally {
+                            }
+                        }
+                    });
+                    return listenableFuture;
+                }
+            });
+
+</code></pre><p>执行结果</p>
+<pre><code>Sun Jan 20 18:55:46 CST 2019&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;put&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+Sun Jan 20 18:55:50 CST 2019&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;get&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+Sun Jan 20 18:55:50 CST 2019&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;reload&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+Sun Jan 20 18:55:50 CST 2019&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;load&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+Sun Jan 20 19:11:37 CST 2019&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;cause:REPLACED key:1 value:1
+</code></pre><p>由上述程序执行结果，可以看出，cache的key进行put后4S没有reload，第5S的时候get请求后，reload才开始。</p>
+<p>2、Guava Cache的load方法不能返回null，否则抛异常，Guava Cache的get方法先在本地缓存中取，如果不存在，则会触发load方法。但load方法不能返回null。 </p>
+<hr>
+<h2 id="Guava-cache-有什么替代品"><a href="#Guava-cache-有什么替代品" class="headerlink" title="Guava cache 有什么替代品"></a>Guava cache 有什么替代品</h2><p>Caffeine 宣称拥有比 Guava Cache 高几倍的读写效率</p>
+<hr>
+<h2 id="Guava-cache使用步骤"><a href="#Guava-cache使用步骤" class="headerlink" title="Guava cache使用步骤"></a>Guava cache使用步骤</h2><h3 id="引入maven的POM"><a href="#引入maven的POM" class="headerlink" title="引入maven的POM"></a>引入maven的POM</h3><pre><code>&lt;dependency&gt;
+            &lt;groupId&gt;com.google.guava&lt;/groupId&gt;
+            &lt;artifactId&gt;guava&lt;/artifactId&gt;
+       &lt;version&gt;19.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><h3 id="Guava-Cache初始化"><a href="#Guava-Cache初始化" class="headerlink" title="Guava Cache初始化"></a>Guava Cache初始化</h3><h4 id="Cache-Callable"><a href="#Cache-Callable" class="headerlink" title="Cache Callable"></a>Cache Callable</h4><pre><code> final static Cache&lt;Integer, String&gt; cache = CacheBuilder.newBuilder()
+            //设置cache的初始大小为10，要合理设置该值
+            .initialCapacity(10)
+            //设置并发数为5，即同一时间最多只能有5个线程往cache执行写入操作
+            .concurrencyLevel(5)
+            //设置cache中的数据在写入之后的存活时间为10秒
+            .expireAfterWrite(10, TimeUnit.SECONDS)
+            //构建cache实例
+            .build();
+
+</code></pre><h4 id="LoadingCache"><a href="#LoadingCache" class="headerlink" title="LoadingCache"></a>LoadingCache</h4><pre><code> final static LoadingCache&lt;String, Integer&gt; cache = CacheBuilder.newBuilder()
+            .maximumSize(10)  //最多存放十个数据
+            .expireAfterWrite(10, TimeUnit.SECONDS)  //缓存200秒
+            .recordStats()   //开启 记录状态数据功能
+            .build(new CacheLoader&lt;String, Integer&gt;() {
+                //数据加载，默认返回-1,也可以是查询操作，如从DB查询
+                @Override
+                public Integer load(String key) throws Exception {
+                    return -1;
+                }
+            });
+
+</code></pre><h3 id="Guava-Cache常用方法"><a href="#Guava-Cache常用方法" class="headerlink" title="Guava Cache常用方法"></a>Guava Cache常用方法</h3><pre><code>/** 
+ * 该接口的实现被认为是线程安全的，即可在多线程中调用 
+ * 通过被定义单例使用 
+ */  
+public interface Cache&lt;K, V&gt; {  
+
+  /** 
+   * 通过key获取缓存中的value，若不存在直接返回null 
+   */  
+  V getIfPresent(Object key);  
+
+  /** 
+   * 通过key获取缓存中的value，若不存在就通过valueLoader来加载该value 
+   * 整个过程为 &quot;if cached, return; otherwise create, cache and return&quot; 
+   * 注意valueLoader要么返回非null值，要么抛出异常，绝对不能返回null 
+   */  
+  V get(K key, Callable&lt;? extends V&gt; valueLoader) throws ExecutionException;  
+
+  /** 
+   * 添加缓存，若key存在，就覆盖旧值 
+   */  
+  void put(K key, V value);  
+
+  /** 
+   * 删除该key关联的缓存 
+   */  
+  void invalidate(Object key);  
+
+  /** 
+   * 删除所有缓存 
+   */  
+  void invalidateAll();  
+
+  /** 
+   * 执行一些维护操作，包括清理缓存 
+   */  
+  void cleanUp();  
+}
+
+</code></pre><h2 id="缓存回收"><a href="#缓存回收" class="headerlink" title="缓存回收"></a>缓存回收</h2><p><code>基于容量回收</code> </p>
+<p>CacheBuilder.maximumSize(long)</p>
+<p><code>定时回收</code>   </p>
+<p>expireAfterAccess(long, TimeUnit) -&gt; KEY在一定时间内没有读写，则失效，下次读取直接load（）中取</p>
+<p>expireAfterWrite(long, TimeUnit) -&gt; 避免了缓存穿透的问题，保证了数据的实时性，牺牲的是性能，当数据expire的时候，大量get请求过来的时候，只有一个请求会去load（）数据，而没有更新完成之前，其他全部请求会被block（每个线程都要轮询的判断lock状态）</p>
+<p><code>基于引用回收</code> </p>
+<pre><code>           CacheBuilder.weakKeys()：使用弱引用存储键
+           CacheBuilder.weakValues()：使用弱引用存储值
+           CacheBuilder.softValues()：使用软引用存储值。
+</code></pre><hr>
+<h2 id="缓存刷新"><a href="#缓存刷新" class="headerlink" title="缓存刷新"></a>缓存刷新</h2><p>refreshAfterWrite(long, TimeUnit) -&gt; 机制是并非超时时间到就自动刷新，而是请求 get的时候才会触发refresh，默认refresh是同步请求新值，可以重写refresh方法改成异步。如果有大量并发请求的时候，只会有一个请求get-&gt;reload同步执行，其他线程返回旧值.</p>
+<ul>
+<li><p>弊端<br>吞吐量低的应用，在超过过期时间时，大量并发get请求时，大部分拿到的是很久前的旧值，导致数据脏读。</p>
+</li>
+<li><p>如何解决？<br>可以同时使用expireAfterWrite设置key过期时间，比如每2s刷新一次新值，设置expireAfterWrite为5s为过期时间，则当key值5s没有访问的话，则第5s的时候强制取load新值，解决了脏读问题，也同时避免了缓存穿透问题。</p>
+</li>
+</ul>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>Guava是如何实现，当缓存过期，只有一个请求去DB捞取数据的？</p>
+<p>在《JAVA并发编程的艺术》里面有提到过这个方案，使用concurrentHashMap与futureTask,<br>futureTask的特点就是 当一个线程需要等待某一个线程的计算结果的场景。</p>
+<hr>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p><a href="https://github.com/ben-manes/caffeine" target="_blank" rel="noopener">Caffeine github</a><br><a href="https://github.com/huangchunwu/own" target="_blank" rel="noopener">示例代码</a></p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/01/25/forkjoin/" class="pre-post btn btn-default" title='并行计算框架forkJoin框架'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            并行计算框架forkJoin框架</span>
+    </a>
+    
+    
+    <a href="/2019/01/11/hexo-improve/" class="next-post btn btn-default" title='hexo主题优化'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            hexo主题优化</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么使用Guava-Cache？"><span class="toc-text">为什么使用Guava Cache？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哪些场景适合使用Guava-cache"><span class="toc-text">哪些场景适合使用Guava cache</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Guava-cache特性"><span class="toc-text">Guava cache特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Guava-cache-有什么替代品"><span class="toc-text">Guava cache 有什么替代品</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Guava-cache使用步骤"><span class="toc-text">Guava cache使用步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#引入maven的POM"><span class="toc-text">引入maven的POM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Guava-Cache初始化"><span class="toc-text">Guava Cache初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Cache-Callable"><span class="toc-text">Cache Callable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LoadingCache"><span class="toc-text">LoadingCache</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Guava-Cache常用方法"><span class="toc-text">Guava Cache常用方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存回收"><span class="toc-text">缓存回收</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#缓存刷新"><span class="toc-text">缓存刷新</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩展"><span class="toc-text">扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附录"><span class="toc-text">附录</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

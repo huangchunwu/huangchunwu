@@ -1,0 +1,327 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="Mysql,隔离级别">
+
+
+<meta name="description" content="预备知识ACID是做什么的简而言之，解释为
+
+    原子性（atomicity）
+    一致性（consistency）
+    隔离性（isolation）
+    持久性（durabil...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    MYSQL事务默认隔离级别为什么是可重复读 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="MYSQL事务默认隔离级别为什么是可重复读">
+            
+            MYSQL事务默认隔离级别为什么是可重复读
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/Mysql/">Mysql</a> <a class="tag-link" href="/tags/隔离级别/">隔离级别</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/04/25</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                558</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><h3 id="ACID是做什么的"><a href="#ACID是做什么的" class="headerlink" title="ACID是做什么的"></a>ACID是做什么的</h3><pre><code>简而言之，解释为
+
+    原子性（atomicity）
+    一致性（consistency）
+    隔离性（isolation）
+    持久性（durability）  
+</code></pre><p><strong>为保证数据库事务操作的正确性与可靠性</strong>，必须满足以上4个特性。</p>
+<hr>
+<h3 id="事务隔离级别跟ACID有啥关系"><a href="#事务隔离级别跟ACID有啥关系" class="headerlink" title="事务隔离级别跟ACID有啥关系"></a>事务隔离级别跟ACID有啥关系</h3><p>上面ACID的4个特性中，其他三个都是针对单一事务，当出现并行事务的时候，就会存在以下几个问题：</p>
+<ul>
+<li>脏读</li>
+<li>不可重复读</li>
+<li>幻读</li>
+</ul>
+<p>数据库是怎么解决这个问题的呢？<br>简而言之，加锁。数据库提供了自动锁的功能，只需要用户指定会话的事务隔离级别，数据库就会分析SQL然后给事务访问的资源加入合适的锁。</p>
+<p>事务隔离级别有以下</p>
+<ul>
+<li>读未提交(Read UnCommitted)</li>
+<li>读已提交(Read Commited，后面简称RC)</li>
+<li>可重复读(Repeatable Read，后面简称RR)</li>
+<li>序列化读(Serializable)</li>
+</ul>
+<hr>
+<h3 id="binlog的几种格式"><a href="#binlog的几种格式" class="headerlink" title="binlog的几种格式"></a>binlog的几种格式</h3><ul>
+<li>statement:记录的是修改SQL语句</li>
+<li>row：记录的是每行实际数据的变更 ，RC隔离级别下使用的binlog格式   </li>
+<li>mixed：statement和row模式的混合</li>
+</ul>
+<hr>
+<h2 id="MySQL事务默认隔离级别RR"><a href="#MySQL事务默认隔离级别RR" class="headerlink" title="MySQL事务默认隔离级别RR"></a>MySQL事务默认隔离级别RR</h2><p>我们知道，Oracal默认隔离级别是RC， Mysql默认隔离级别是RR，可不可以换成其他的？<br>数据库主从同步的方式是怎么样， 是通过binlog。<br>Mysql 5.0版本之前，binlog只支持STATEMENT这种格式。而这种格式<strong>在RC隔离级别下主从同步是有bug的。因此Mysql将RR作为默认的隔离级别！</strong></p>
+<hr>
+<h2 id="互联网项目中mysql应该选什么事务隔离级别？"><a href="#互联网项目中mysql应该选什么事务隔离级别？" class="headerlink" title="互联网项目中mysql应该选什么事务隔离级别？"></a>互联网项目中mysql应该选什么事务隔离级别？</h2><p>由上面我们知道了，mysql默认是可重复读的原因，那么我们可以升级Mysql到5,1即可以解决，<strong>互联网项目大部分用的是RC</strong>，为什么？</p>
+<ul>
+<li>可重复读存在GAP锁，死锁的概率相对读已提交大</li>
+<li>在RR隔离级别下，条件列未命中索引会锁表！而在RC隔离级别下，只锁行</li>
+</ul>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/04/26/面试/" class="pre-post btn btn-default" title='如何平滑数据迁移不影响服务的可用性'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            如何平滑数据迁移不影响服务的可用性</span>
+    </a>
+    
+    
+    <a href="/2019/04/20/SQL优化神器explain/" class="next-post btn btn-default" title='SQL优化神器explain'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            SQL优化神器explain</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#预备知识"><span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ACID是做什么的"><span class="toc-text">ACID是做什么的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#事务隔离级别跟ACID有啥关系"><span class="toc-text">事务隔离级别跟ACID有啥关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#binlog的几种格式"><span class="toc-text">binlog的几种格式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL事务默认隔离级别RR"><span class="toc-text">MySQL事务默认隔离级别RR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#互联网项目中mysql应该选什么事务隔离级别？"><span class="toc-text">互联网项目中mysql应该选什么事务隔离级别？</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

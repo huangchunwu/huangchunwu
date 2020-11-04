@@ -1,0 +1,462 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="Spring,设计模式,SpringBoot">
+
+
+<meta name="description" content="最近在写一个项目，需要借助spring的自定义属性编辑器，实现一个分发器的功能，将踩过的坑记录下来，方便下次查阅。
+
+为什么这里提到spring4+呢?customEditors在spring4...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    自定义属性编辑器实现分发器在Spring和SpringBoot的不同实现方式 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="自定义属性编辑器实现分发器在Spring和SpringBoot的不同实现方式">
+            
+            自定义属性编辑器实现分发器在Spring和SpringBoot的不同实现方式
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/Spring/">Spring</a> <a class="tag-link" href="/tags/SpringBoot/">SpringBoot</a> <a class="tag-link" href="/tags/设计模式/">设计模式</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/07/05</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                488</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>最近在写一个项目，需要借助spring的自定义属性编辑器，实现一个分发器的功能，将踩过的坑记录下来，方便下次查阅。</p>
+<blockquote>
+<p>为什么这里提到spring4+呢?<br>customEditors在spring4.0以下的是Map类型，，key的类型必须是Class类型，而value是一个注入的bean；在spring4.0中，<br>key和value的类型必须是Class类型，也就是说配置信息中的 customEditors 中的value值不能在是bean，而应该修改成class</p>
+</blockquote>
+<hr>
+<h2 id="Spring4的自定义属性编辑器实现分发器"><a href="#Spring4的自定义属性编辑器实现分发器" class="headerlink" title="Spring4的自定义属性编辑器实现分发器"></a>Spring4的自定义属性编辑器实现分发器</h2><ol>
+<li>MatchBean</li>
+</ol>
+<pre><code>public interface MatchingBean&lt;T&gt; {
+    boolean matching(T factor);
+}
+</code></pre><ol start="2">
+<li>FactoryList</li>
+</ol>
+<pre><code>public interface FactoryList&lt;E extends MatchingBean&lt;K&gt;, K&gt; extends List&lt;E&gt; {
+    E getBean(K factor);
+}
+</code></pre><ol start="3">
+<li>FactoryArrayList</li>
+</ol>
+<pre><code>public class FactoryArrayList&lt;E extends MatchingBean&lt;K&gt;, K&gt; extends ArrayList&lt;E&gt; 
+implements FactoryList&lt;E, K&gt;, InitializingBean {
+
+    private static final long serialVersionUID = 5705342394882249201L;
+
+    public FactoryArrayList() {
+        super();
+    }
+
+    public FactoryArrayList(int size) {
+        super(size);
+    }
+
+    public E getBean(K factor) {
+        Iterator&lt;E&gt; itr = iterator();
+        while(itr.hasNext()) {
+            E beanMatch = itr.next();
+            if(beanMatch.matching(factor)) {
+                return beanMatch;
+            }
+        }
+        return null;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        if (!isEmpty()) {
+            Object[] a = toArray();
+            OrderComparator.sort(a);
+            ListIterator i = listIterator();
+            for (int j=0; j&lt;a.length; j++) {
+                i.next();
+                i.set(a[j]);
+            }
+        }
+    }
+
+}
+</code></pre><ol start="4">
+<li>CustomEditorRegistrar</li>
+</ol>
+<pre><code>public class CustomEditorRegistrar implements PropertyEditorRegistrar {
+
+    private Map&lt;Class&lt;?&gt;, PropertyEditor&gt; customEditors;
+
+    public void registerCustomEditors(PropertyEditorRegistry registry) {
+        if (customEditors != null) {
+            Set&lt;Map.Entry&lt;Class&lt;?&gt;, PropertyEditor&gt;&gt; entries = customEditors.entrySet();
+            for (Map.Entry&lt;Class&lt;?&gt;, PropertyEditor&gt; entry : entries) {
+                registry.registerCustomEditor(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    public void setCustomEditors(Map&lt;Class&lt;?&gt;, PropertyEditor&gt; customEditors) {
+        this.customEditors = customEditors;
+    }
+}
+</code></pre><ol start="5">
+<li>配置文件</li>
+</ol>
+<pre><code>&lt;bean class=&quot;org.springframework.beans.factory.config.CustomEditorConfigurer&quot;&gt;
+    &lt;property name=&quot;customEditors&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;com.huangcw.utils.bean.FactoryList&quot;&gt;
+                &lt;ref bean=&quot;factoryListEditor&quot;/&gt;
+            &lt;/entry&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id=&quot;factoryListEditor&quot; class=&quot;org.springframework.beans.propertyeditors.CustomCollectionEditor&quot;&gt;
+    &lt;constructor-arg name=&quot;collectionType&quot; value=&quot;com.huangcw.utils.bean.FactoryArrayList&quot; type=&quot;java.lang.Class&quot;&gt;&lt;/constructor-arg&gt;
+&lt;/bean&gt;
+</code></pre><ol start="6">
+<li>调用</li>
+</ol>
+<pre><code>@Autowired
+private FactoryList&lt;IGiftReceiveService,Long&gt; giftReceiveServiceIntegerFactoryList;
+
+
+ActivityGiftReceviedCondition condition = ActivityGiftReceviedCondition.newBuilder()
+            .giftId(Long.parseLong(giftId))
+            .num(num)
+            .activityId(activityId)).build();
+    return Result.getResult(giftService.receiveGift(condition));
+</code></pre><h2 id="SpringBoot版"><a href="#SpringBoot版" class="headerlink" title="SpringBoot版"></a>SpringBoot版</h2><p>思路就是 将上面的xml翻译为spring的注解方式即可，其他的matchBean,facotyList都跟上面一样，直接上源码：</p>
+<ol>
+<li>自定义属性配置</li>
+</ol>
+<pre><code>@Configuration
+public class BeanConfig {
+
+    @Bean
+    public CustomCollectionEditor customCollectionEditor() {
+        CustomCollectionEditor cce =new CustomCollectionEditor(FactoryArrayList.class);
+        return cce;
+    }
+
+    @Bean
+    public CustomEditorRegistrar customEditorRegistrar() {
+        CustomEditorRegistrar cec =new CustomEditorRegistrar();
+        Map&lt;Class&lt;?&gt;, PropertyEditor&gt; map  = new HashMap();
+        map.put(FactoryList.class,customCollectionEditor());
+        cec.setCustomEditors(map);
+        return cec;
+    }
+
+    @Bean
+    public CustomEditorConfigurer customEditorConfigurer(){
+        CustomEditorConfigurer cec = new CustomEditorConfigurer();
+        CustomEditorRegistrar[] propertyEditorRegistrars = new CustomEditorRegistrar[]{
+                customEditorRegistrar()
+        };
+        cec.setPropertyEditorRegistrars(propertyEditorRegistrars);
+        return cec;
+    }
+}
+</code></pre><ol start="2">
+<li>继承MatchingBean的业务接口DispatchService</li>
+</ol>
+<pre><code>public interface DispatchService extends MatchingBean&lt;String&gt; {
+
+}
+</code></pre><ol start="3">
+<li>实现DispatchService接口的类，重写matching匹配方法</li>
+</ol>
+<pre><code>@Service
+public class ADispatchServiceImpl implements DispatchService {
+
+
+    @Override
+    public boolean matching(String factor) {
+        return &quot;A&quot;.equals(factor);
+    }
+}
+</code></pre><ol start="4">
+<li>调用方式</li>
+</ol>
+<pre><code>@RestController
+public class DispatchController {
+
+    @Resource
+    private FactoryList&lt;DispatchService,String&gt; factoryDispatchList;
+
+    @RequestMapping(&quot;/{a}/cancel/{params}&quot;)
+    public String dispatch(@PathVariable(&quot;a&quot;) String airline, @PathVariable(&quot;params&quot;) String params){
+
+        String result = factoryDispatchList.getBean(a).cancel(params);
+
+        return a+result;
+    }
+
+}
+</code></pre><p>这种设计方法，可以简单的实现转发器，我经常在项目里面使用，并且我的同事从前家公司离开之后，也很爱用这种方法,<br>因为这样写是你的代码很整洁，也符合开闭原则，可扩展性强。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/07/08/在docker下安装zookeeper/" class="pre-post btn btn-default" title='在docker下安装zookeeper'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            在docker下安装zookeeper</span>
+    </a>
+    
+    
+    <a href="/2019/07/05/结合Spring工程模式-策略模式-模板的项目应用/" class="next-post btn btn-default" title='结合Spring工程模式+策略模式+模板的项目应用'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            结合Spring工程模式+策略模式+模板的项目应用</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring4的自定义属性编辑器实现分发器"><span class="toc-text">Spring4的自定义属性编辑器实现分发器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SpringBoot版"><span class="toc-text">SpringBoot版</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

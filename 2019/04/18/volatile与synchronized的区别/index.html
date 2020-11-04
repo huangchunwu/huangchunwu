@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="volatile,synchronized">
+
+
+<meta name="description" content="前置知识JMM虚拟机线程内存模型:   每个线程，都是在自己的工作内存里面操作，想与另外一个线程共享变量值，需要将工作内存的变量刷到主内存，其他线程从主内存复制一份到工作线程来取值。
+区别vol...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    volatile 必备知识 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="volatile 必备知识">
+            
+            volatile 必备知识
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/synchronized/">synchronized</a> <a class="tag-link" href="/tags/volatile/">volatile</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/04/18</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                565</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>JMM虚拟机线程内存模型<br>:   每个线程，都是在自己的工作内存里面操作，想与另外一个线程共享变量值，需要将工作内存的变量刷到主内存，其他线程从主内存复制一份到工作线程来取值。</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><pre><code>volatile
+保证了线程之间的可见性和有序性,但不具备原子性。被volatile修饰的变量，线程每次取值都会
+从主内存复制到工作内存。 
+</code></pre><pre><code>synchronized 
+解释成JVM指令码 就是monitorenter 和 monitorexit控制线程同步
+保证了线程的可见性、有序性和原子性。synchronized的锁来自
+对象头的锁，即MarkWord存放的锁标志。
+</code></pre><p>这里容易混淆的是 synchronized有序性，不代表能防止指令重排序，有序性的含义是代表保证线程执行的有序性，也只有volatile才有指令内存屏障，<br>所以双重检锁的单例模式，用了volatile修饰instance，防止new instance()的非原子性操作的指令重排序，导致拿到null的单例。</p>
+<hr>
+<p>2019-5-11</p>
+<p>今天20:00饿了么蜂鸟配送的面试官电面了我，问了这块知识，原来这里可以有这么多东西可以问。</p>
+<h2 id="volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？"><a href="#volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？" class="headerlink" title="volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？"></a>volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？</h2><p>JVM内存模型对volatile修饰的变量，定义了几个特殊规则：</p>
+<ol>
+<li>线程在工作内存中，使用该变量的时候，需要从主内存刷新到工作内存去。</li>
+<li>线程修改了工作内存的变量值，需要刷新到主内存去，供其他线程使用。</li>
+</ol>
+<h2 id="为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆"><a href="#为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆" class="headerlink" title="为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆"></a>为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆</h2><p>主内存是线程共享的，不具有线程安全性，而工作内存是线程独有的，具有隔离性，线程安全<br>工作内存即CPU的高速缓存，为了执行效率高。</p>
+<h2 id="volatile有哪些场景的应用"><a href="#volatile有哪些场景的应用" class="headerlink" title="volatile有哪些场景的应用"></a>volatile有哪些场景的应用</h2><ol>
+<li>用于一些开关标识的场景（我只知道这个）</li>
+<li>用于缓存的更新的场景，比如缓存失效的时候，多个线程并发获取该缓存，只允许一个线程去DB，拉取数据后塞进缓存后，供其他线程可见使用。</li>
+<li>单例模式中，声明单例为volatile。</li>
+</ol>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/04/20/SQL优化神器explain/" class="pre-post btn btn-default" title='SQL优化神器explain'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            SQL优化神器explain</span>
+    </a>
+    
+    
+    <a href="/2019/04/06/gc/" class="next-post btn btn-default" title='垃圾回收器的选择'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            垃圾回收器的选择</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前置知识"><span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#区别"><span class="toc-text">区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？"><span class="toc-text">volatile怎么保证线程的可见性，一个线程的变量变更，另一个线程是怎么感知的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆"><span class="toc-text">为什么JVM将内存分为工作内存与主内存，即为什么有栈和堆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile有哪些场景的应用"><span class="toc-text">volatile有哪些场景的应用</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

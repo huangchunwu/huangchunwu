@@ -1,0 +1,377 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="Java新特性">
+
+
+<meta name="description" content="Java9之后，JCP执行委员会提出将Java的发布频率改为每六个月一次。现在Java已经更新到Java 12了，可是我还停留在Java8上，不得不感慨程序员要保持学习，才能不会被淘汰啊。
+
+
+...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    Java7,8,9,10,11,12新特性 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Java7,8,9,10,11,12新特性">
+            
+            Java7,8,9,10,11,12新特性
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/Java新特性/">Java新特性</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/09/30</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                401</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>Java9之后，JCP执行委员会提出将Java的发布频率改为每六个月一次。现在Java已经更新到Java 12了，可是我还停留在Java8上，不得不感慨程序员要保持学习，才能不会被淘汰啊。</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>发布时间</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java7</td>
+<td>2011年7月28日</td>
+<td>NIO，捕获多个异常，jcmd替代jps，fork/join，Java Mission Control（类似JVisualVm），Files</td>
+</tr>
+<tr>
+<td>Java8</td>
+<td>2014年3 月18日</td>
+<td><strong>Lambda 表达式</strong> − Lambda允许把函数作为一个方法的参数（函数作为参数传递进方法中），<strong>Stream API</strong>，<strong>HashMaps性能提升（红黑树）</strong>，<strong>Date Time API</strong>，StampedLock，<strong>Optional</strong>，<strong>默认方法</strong> − 默认方法就是一个在接口里面有了一个实现的方法；<strong>方法引用</strong> − 方法引用提供了非常有用的语法，可以直接引用已有Java类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码；<strong>Nashorn, JavaScript 引擎</strong> − Java 8提供了一个新的Nashorn javascript引擎，它允许我们在JVM上运行特定的javascript应用；<strong>静态方法</strong> </td>
+</tr>
+<tr>
+<td>Java9</td>
+<td>2017年9 月22日</td>
+<td><strong>模块系统</strong>：模块是一个包的容器，Java 9 最大的变化之一是引入了模块系统（Jigsaw 项目），<strong>REPL (JShell)</strong>：交互式编程环境；G1成为默认垃圾回收器，<strong>HTTP 2 客户端</strong>，同时改进httpclient的api，支持异步模式，jshell，docker方面支持，集合工厂方法（list,map,set）加入of，<strong>改进的 Javadoc</strong>：Javadoc 现在支持在 API 文档中的进行搜索。另外，Javadoc 的输出现在符合兼容 HTML5 标准；<strong>私有接口方法</strong>：在接口中使用private私有方法。我们可以使用 private 访问修饰符在接口中编写私有方法。<strong>轻量级的 JSON API</strong>：内置了一个轻量级的JSON API；<strong>响应式流（Reactive Streams) API</strong>: Java 9中引入了新的响应式流 API 来支持 Java 9 中的响应式编程；<strong>进程 API</strong>: 改进的 API 来控制和管理操作系统进程。引进 java.lang.ProcessHandle 及其嵌套接口 Info 来让开发者逃离时常因为要获取一个本地进程的 PID 而不得不使用本地代码的窘境。 </td>
+</tr>
+<tr>
+<td>Java10</td>
+<td>2018年3 月21日</td>
+<td>局部变量类型推断支持var 局部变量，GC改进，线程本地握手</td>
+</tr>
+<tr>
+<td>Java11</td>
+<td>2018年9 月25日</td>
+<td>lombda表达式增强，string增加若干方法，纳入httpclient纳入Java的net包，将java9标记废弃的Java EE及CORBA模块移除掉，httpclient正式启用改为java.net.http模块，允许lambda表达式使用var变量,ZGC可扩展的低延迟垃圾收集器</td>
+</tr>
+<tr>
+<td>Java12</td>
+<td>2019年3 月19日</td>
+<td>Shenandoah：一个低停顿垃圾收集器（实验阶段），Switch 表达式扩展，改善 G1 垃圾收集器</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>总结下，Java8目前企业使用较多，其次是Java 11，其他版本没有特殊变化。Java10 之后，可以使用Java，像JavaScript一样声明局部变量，极大的简化了开发编写速度。 如下：</p>
+<pre><code>public class TestJava11 {
+
+
+    @Test
+    public void test1(){
+        var words = List.of(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;); //初始化list
+        var tempMap = Map.of(&quot;a&quot;,12,&quot;b&quot;,14); //初始化MAP
+        var tempSet = Set.of(&quot;1&quot;,&quot;2&quot;,&quot;4&quot;); //初始化set
+    }
+}
+</code></pre><p>Java11 将httpclient正式归于net包中,同时支持异步调用，以及http/2 最新的http协议</p>
+<pre><code class="java"> @Test
+    public void test() throws Exception {
+
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(Duration.ofSeconds(20))
+               // .proxy(ProxySelector.of(new InetSocketAddress(&quot;www.baidu.com&quot;, 80)))
+                //.authenticator(Authenticator.getDefault())
+                .build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(&quot;https://www.baidu.com&quot;))
+                .timeout(Duration.ofMinutes(2))
+                .header(&quot;Content-Type&quot;, &quot;text/html&quot;)
+                //.POST(HttpRequest.BodyPublishers.ofString(&quot;&quot;, StandardCharsets.UTF_8))
+                .GET()
+                .build();
+
+        HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.statusCode());
+        System.out.println(response.body());
+
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(System.out::println);
+
+        System.in.read();
+    }
+</code></pre>
+<p>不多说了，后面用起来。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/10/10/cleanbadnaming/" class="pre-post btn btn-default" title='利用IDEA批量重命名'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            利用IDEA批量重命名</span>
+    </a>
+    
+    
+    <a href="/2019/09/25/typing/" class="next-post btn btn-default" title='【在线工具】修炼打字速度'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            【在线工具】修炼打字速度</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <p>暂无目录</p>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="hbase">
+
+
+<meta name="description" content="问题现象今天早上，我还在上班路上，测试老大在群里面喊，xx应用仿真环境访问不了，并且截图了log日志，我看了一下是dubbo服务访问超时
+，第一反应是dubbo服务挂了，找运维重启，重启后无果，...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    habase应用查询慢，hbase shell查询快 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="habase应用查询慢，hbase shell查询快">
+            
+            habase应用查询慢，hbase shell查询快
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/hbase/">hbase</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2020/07/02</span>
+    </span>
+    
+    
+</div>
+        
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>今天早上，我还在上班路上，测试老大在群里面喊，xx应用仿真环境访问不了，并且截图了log日志，我看了一下是dubbo服务访问超时</p>
+<p>，第一反应是dubbo服务挂了，找运维重启，重启后无果，然后等我去了公司，看了详细日志，是dubbo接口响应时长达到6s，明明是测试通过的接口，接口性能不可能这样慢， 分析了下这个接口功能，是直连hbase查询，还是rowkey的get查询，应该是几十毫秒内响应。遇到此类，本来好好的，现在不行的问题，一般都是一脸问号，没办法，只能撸起袖子找原因了。</p>
+<h3 id="第一步：hbase数据量是否大了，接口rowkey查询性能问题。"><a href="#第一步：hbase数据量是否大了，接口rowkey查询性能问题。" class="headerlink" title="第一步：hbase数据量是否大了，接口rowkey查询性能问题。"></a>第一步：hbase数据量是否大了，接口rowkey查询性能问题。</h3><p>我连到了hbase服务器上，执行<code>hbase shell</code> </p>
+<pre><code class="shel">get &quot;db.user_acc_profit&quot;,&quot;23342_1_9&quot;
+
+</code></pre>
+<p>耗时 15ms。</p>
+<pre><code class="shell">count &quot;db.user_acc_profit&quot;
+1200 rows
+</code></pre>
+<p>完蛋，hbase没有问题，才1200条数据。只能检查代码去，是否有慢查。</p>
+<h3 id="第二步：检查代码逻辑，是否有慢查"><a href="#第二步：检查代码逻辑，是否有慢查" class="headerlink" title="第二步：检查代码逻辑，是否有慢查"></a>第二步：检查代码逻辑，是否有慢查</h3><p>看了下代码，只是单rowkey查询，没有任何慢查，此时，我陷入了迷茫了，只能靠猜了，我先去开发环境，执行该接口，发现没有问题，只能说明仿真环境真的有问题，但是问题到底是什么，我不知道。</p>
+<h3 id="第三步：网络传输"><a href="#第三步：网络传输" class="headerlink" title="第三步：网络传输"></a>第三步：网络传输</h3><p>经验告诉我，此时不要慌，先把问题捋清楚，</p>
+<p>当前的现象是：</p>
+<ul>
+<li><p>同样的代码，在开发执行hbase查询很快，在仿真很慢。</p>
+</li>
+<li><p>单个hbase shell查询很快，说明hbase本身没有问题</p>
+</li>
+</ul>
+<p>根据这2点分析，hbase 自身shell 命令查询很快，但是应用查询慢，说明问题出现在应用与hbase的交互上，是网络传输做了限制吗？</p>
+<p>带着这个问题，询问了运维，答案是no。我怀疑是dns配置的问题，运维的回答是这台机器用的是本地host解析的ip。就此打断了我对网络的猜测。</p>
+<h3 id="第四步：hbase服务器健康状态"><a href="#第四步：hbase服务器健康状态" class="headerlink" title="第四步：hbase服务器健康状态"></a>第四步：hbase服务器健康状态</h3><p>接着，我又问了管理hbase的运维老师，他打开监控页面，告诉我，hbase服务器很健康。我去hbase服务器上查了下cpu负载</p>
+<p><code>top</code> 了一下，cpu很正常。又查了一下服务器内存，<code>free -m</code>  ，内存也是足够的，又查了下磁盘，<code>df -h</code> ,也正常。</p>
+<p>由于hbase是集群的，服务器比较多，我只是抽查了几台，问题就出在抽查。</p>
+<p>后来不经意，通过程序里面配置的几台hbase的服务ip，发现有一台服务器宕机了，询问了一下前面管hbase的运维老师，他告诉我这台机器运营商硬件故障一直没有恢复，也没办法恢复了，查到这里，仿佛破云见雾般的感觉，我捋顺了思路：hbase shell查询快，说明单机的hbase服务器快，而我之前忽视了程序访问的是一个hbase集群来查询的，如果单台机器挂了，每次发起查询命令的时候，都会从配置的集群列表里面选取一台去查询，然而某台机器挂了，就会重试，重试失败后，再选择其他健康服务器去接着查询，所以出现了habse查询响应慢的现象。</p>
+<p> 然后，我找运维老师把程序的hbase配置给改了一下后，测试了下程序，查询速度恢复正常了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>公司的服务器维护治理，存在问题，此类服务器停机没有及时更新应用配置。</p>
+<p>我在思考，为啥我花了那么久才查找问题，不能第一时间抓住要害。</p>
+<p>当我看到“shell 命令查询没问题，应用程序查询有问题”情形，我的脑回路没有立刻提取到有用的信息：“hbase shell查询的单机，应用查询是走的集群查询”，是因为我没有这个常识吗？不是的。也许这就是知识与实践结合的原因，最后送自己一句话，“你知道不代表你会”。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2020/07/29/责任链项目实战/" class="pre-post btn btn-default" title='责任链和命令模式在订单系统的实战记录'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            责任链和命令模式在订单系统的实战记录</span>
+    </a>
+    
+    
+    <a href="/2020/06/23/设计模式-策略模式与工厂模式结合/" class="next-post btn btn-default" title='设计模式-策略模式与工厂模式结合'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            设计模式-策略模式与工厂模式结合</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#问题现象"><span class="toc-text">问题现象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一步：hbase数据量是否大了，接口rowkey查询性能问题。"><span class="toc-text">第一步：hbase数据量是否大了，接口rowkey查询性能问题。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二步：检查代码逻辑，是否有慢查"><span class="toc-text">第二步：检查代码逻辑，是否有慢查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第三步：网络传输"><span class="toc-text">第三步：网络传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第四步：hbase服务器健康状态"><span class="toc-text">第四步：hbase服务器健康状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

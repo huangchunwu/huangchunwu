@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="设计模式">
+
+
+<meta name="description" content="什么是设计模式？设计模式就是前人总结的代码设计的模型，就像武侠里面的武功的招式，套路。
+为什么需要设计模式啊？我平时代码敲的也没有问题啊，功能也完成了，线上跑的很健康
+1、统一编程风格实现功能，...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    聊聊设计模式的本质 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="聊聊设计模式的本质">
+            
+            聊聊设计模式的本质
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/设计模式/">设计模式</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2020/06/08</span>
+    </span>
+    
+    
+</div>
+        
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h2 id="什么是设计模式？"><a href="#什么是设计模式？" class="headerlink" title="什么是设计模式？"></a>什么是设计模式？</h2><p>设计模式就是前人总结的代码设计的模型，就像武侠里面的武功的招式，套路。</p>
+<p>为什么需要设计模式啊？我平时代码敲的也没有问题啊，功能也完成了，线上跑的很健康</p>
+<h3 id="1、统一编程风格"><a href="#1、统一编程风格" class="headerlink" title="1、统一编程风格"></a>1、统一编程风格</h3><p>实现功能，这属于硬编码，没有什么技巧，形成不了模式，只能说是个copyer，复制人。大部分代码都是cv的。不能称得上工程师，你敲的代码不能成为工程级别的项目。可能你写的代码只能你自己看得懂，如果你的命名不规范的化，就会形成自己的一套代码风格。</p>
+<h3 id="2、易维护，行内统一语言"><a href="#2、易维护，行内统一语言" class="headerlink" title="2、易维护，行内统一语言"></a>2、易维护，行内统一语言</h3><p>如果你使用设计模式，大家的代码风格统一了，大家都有了共识，理解代码的结构也很轻松，不过这里有个大前提，就是你的团队，都懂设计模式。</p>
+<h3 id="3、代码更优雅"><a href="#3、代码更优雅" class="headerlink" title="3、代码更优雅"></a>3、代码更优雅</h3><p>设计模式，让你的代码更优雅，比如建造者模式</p>
+<pre><code>
+HttpClient.builder().url(&quot;&lt;http://aliserver/api/user/query&gt;&quot;)
+
+        .method(Method.GET)
+
+        .parameter(Map.of(&quot;uuid&quot;, &quot;432231&quot;, &quot;key&quot;, &quot;di2da2ddsa3s&quot;))
+
+        .build();
+
+</code></pre><h3 id="4、可扩展性强，轻松应对多变需求"><a href="#4、可扩展性强，轻松应对多变需求" class="headerlink" title="4、可扩展性强，轻松应对多变需求"></a>4、可扩展性强，轻松应对多变需求</h3><p>设计模式，可以让代码写的复用性好，可扩展性强。说白了，就是面对多变的需求，你可以改动很少的代码就能适应新需求，就像汽车的部件一样，代码功能块就像汽车部件了，拆拆装装，就产生新的新特的汽车。这样的代码，老板喜欢，因为节省开发成本，减少人力；深受同行吹捧，因为这已经成为工匠打磨的作品。</p>
+<p>怎么使用设计模式<br>从我学习设计模式的经验，记住概念，记住类图 ，很容易忘记，容易混淆各个设计模式。后来发现，记住设计模式的本质是很重要的，让围绕这个本质，再去看这些设计模式，比较容易吸收点。</p>
+<p><strong>设计模式的目标：让代码，维护成本低，面对多变需求，可扩展性强.</strong></p>
+<p><strong>设计模式的本质：面向抽象，隔离实现</strong></p>
+<p>用白话解释就是，设计模式都是抽象类，接口来组织代码关系，实现层都是被隐藏的，也就是隐藏细节，面向抽象层。<br><strong>那么为什么要面向抽象，隔离实现呢？</strong></p>
+<p><strong>因为抽象是稳定的,实现层是具体的细节，是多变的。</strong></p>
+<p>举个例子，用户登录注册这样的需求，抽象出来，就是用户服务：userService，有login（），register（）。然后我们提测，测试经过数天的功能测试，回归测试，生产验证，功能发布成功，</p>
+<p>这是不变的方法吧。如果要来了一个微信登录这些细节的时候，那么user这个类就不稳定了。所以我们设计成abstract userService，wxUserService，qqUserService。</p>
+<p>可以做到面对多变需求，动态扩展，不需要修改原有的类，避免了维护原有类，测试原有功能的工作量。</p>
+<p>然后为了“面向抽象，隔离实现”这个目标，先人提出了设计原则</p>
+<p>我们开发一个订单系统的项目，经过需求评审，代码实现，单元测试，功能测试，线上运行，投入了很多的人力成本，才交出了stabale稳定的代码。</p>
+<p>现在需要添加一个功能，作为老板，或者管理人员，我们希望不要修改原有功能模块的代码，这样增加了回归已有功能的工作量，也增加了线上原有功能影响的风险，所以期望只在原有基础扩展现有功能。</p>
+<p>这里，就得提到，开发程序要符合<strong>开闭原则，做到不修改，只扩展。</strong></p>
+<p>要做到开闭原则，就得引出设计原则：<strong>单一职责</strong>，我们定义的类的功能边界要明确，职责清晰，这样面对多变的需求变动的可能性就小，比如下单功能，orderService只负责订单的创建订单，修改订单功能，如果还参杂着的物流信息的功能，下次如果物流功能变更，就会牵扯到订单功能。</p>
+<p>上面我们提到了，抽象是稳定的，实现是多变的，所以引出了<strong>依赖倒置</strong>的原则，我们定义的类与类之间，是通过抽象层产生关系，抽象层不依赖实现类，实现类要依赖抽象层，体现了“面向抽象，隔离实现”</p>
+<p>还有<strong>接口隔离原则</strong>，接口的实现类，不要实现跟自己无关的抽象方法，类的继承也要做到尽可能少的继承与自己无关的方法，这样做也是为了减少上层的变动影响了下层。</p>
+<p>在程序开发中，类与类之间肯定会产生关系，就难免产生耦合，类之间关系越复杂，牵涉到某功能变动，就会影响，不符合开闭原则，所以我们约定类与类之间尽可能少的产生依赖关系，只与自己直接关系的类有依赖关系，这也就是<strong>迪米特法则</strong>，也就是最小知道原则，</p>
+<p>类的继承，是强耦合的东西，给程序带入了侵入型，基类的方法，被子类继承，如果继承的方法发生变更，子类功能都会受影响，所以我们约定了 子类继承基类，只能继承原有方法，新增新的功能方法，不得重写父类的功能方法，这就是<strong>里氏替换原则：出现基类的地方，子类能替换。</strong></p>
+<p><strong>合成复用原则：少用继承，多用合成，依赖关系</strong>，为了减少耦合的可能性。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>遵守了上面提到了设计原则，我们的代码健壮性更强，可扩展性也更好，减少了代码的出错率。<br>设计模式，就是基于上述的7大原则，形成的一套招式，其中比较典型的就是桥梁模式。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2020/06/23/逃逸分析/" class="pre-post btn btn-default" title='聊聊逃逸分析'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            聊聊逃逸分析</span>
+    </a>
+    
+    
+    <a href="/2019/12/16/linux-virus/" class="next-post btn btn-default" title='Linux服务器病毒查杀经过'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            Linux服务器病毒查杀经过</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是设计模式？"><span class="toc-text">什么是设计模式？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、统一编程风格"><span class="toc-text">1、统一编程风格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、易维护，行内统一语言"><span class="toc-text">2、易维护，行内统一语言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、代码更优雅"><span class="toc-text">3、代码更优雅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4、可扩展性强，轻松应对多变需求"><span class="toc-text">4、可扩展性强，轻松应对多变需求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>

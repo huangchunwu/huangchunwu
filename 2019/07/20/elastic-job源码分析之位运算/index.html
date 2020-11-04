@@ -1,0 +1,373 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="一代天骄&#39;s BLOG">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://www.hasfun.cn">
+    <!--SEO-->
+
+<meta name="keywords" content="源码分析,elastic-job">
+
+
+<meta name="description" content="最近在看elastic-job源码，每个技术点，都是自己的盲点，没办法进行下去了，先上第一个。
+JobSettings类中：
+private Map&lt;String, String&gt; ...">
+
+
+<meta name="robots" content="all">
+<meta name="google" content="all">
+<meta name="googlebot" content="all">
+<meta name="verify" content="all">
+    <!--Title-->
+
+<title>
+    
+    elastic-job源码分析之位运算 |
+    
+    一代天骄&#39;s BLOG
+</title>
+
+<link rel="alternate" href="/atom.xml" title="一代天骄&#39;s BLOG" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash">
+    
+
+
+
+    
+
+</head></html>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://hasfun.cn/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='一代天骄'>
+            <img src="/img/avatar.png" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <img src="/img/branding.png" alt="Snippet 博客主题" class="img-responsive center-block">
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://www.hasfun.cn">
+                        一代天骄&#39;s BLOG</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                首页</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/技术/"><i class="fa "></i>
+                                技术</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/生活/"><i class="fa "></i>
+                                生活</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="elastic-job源码分析之位运算">
+            
+            elastic-job源码分析之位运算
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        <a class="category-link" href="/categories/技术/">技术</a>
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/elastic-job/">elastic-job</a> <a class="tag-link" href="/tags/源码分析/">源码分析</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2019/07/20</span>
+    </span>
+    
+    
+</div>
+        
+        
+        <p class="fa fa-exclamation-triangle warning">
+            本文于<strong>
+                473</strong>
+            天之前发表，文中内容可能已经过时。
+        </p>
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>最近在看elastic-job源码，每个技术点，都是自己的盲点，没办法进行下去了，先上第一个。</p>
+<p>JobSettings类中：</p>
+<pre><code>private Map&lt;String, String&gt; jobProperties = new LinkedHashMap&lt;&gt;(JobPropertiesEnum.values().length, 1);
+</code></pre><p>看到这个声明map的方法，让我想起之前学的<a href="https://huangchunwu.github.io/2019/05/09/HashMap%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_blank" rel="noopener">HashMap的源码</a>，我们知道HashMap扩容性能比较差，所以声明Map的时候指定initialCapacity默认容量大小，这不足为奇，但是这里指定loadFactor加载因子为1（默认0.75），估计也是为了减少扩容的触发条件吧。elasticjob声明的容量大小为2，那么我开始理解的意思是，当jobProperties最多put 2个值就会触发HashMap的扩容，如果容量为10，则最多put 10个值就会触发…结果却大跌眼镜，我写了一个测试用例：<br>public class MapTest {</p>
+<pre><code>//创建hashmap设置默认大小，与加载因子，防止过度扩容
+private static Map&lt;String, String&gt; jobProperties = new LinkedHashMap&lt;&gt;(10, 1);
+
+public static void main(String[] args) {
+    for (int i=0 ;i&lt;11;i++){
+        jobProperties.put(&quot;test_&quot;+i,&quot;val_&quot;+i);
+    }
+}
+</code></pre><p>dubug发现没有扩容；然后我翻了下源码，发现map里的扩容条件不是我想的那样。</p>
+<pre><code>//扩容触发的条件，Map的size&gt;threshold
+if (++size &gt; threshold)
+        resize();
+</code></pre><p>继而找到了threshold的计算方法tableSizeFor，说这个之前，还是先温习下计算机的位运算</p>
+<pre><code>3 + 2 = 5 ，计算机转成二进制运算：
+
+00000011
+00000010
+——————
+00000101  =  5
+
+***************************************
+
+2*2 = 4，则
+
+00000010 *2
+——————
+00000100  =  4
+
+2*4=8
+00000010 *4
+——————
+00001000  =  8
+
+2*8=16
+00000010 *8
+——————
+01000000  =  16
+</code></pre><p>通过上面运算可以总结一下规律：</p>
+<blockquote>
+<p>a<em>b,当b满足2^N,则结果为a左移N位，2</em>2=2&lt;&lt;1,2<em>4=2&lt;&lt;2,28=2&lt;&lt;3<br>那么当b不满足2^N的时候，编译器会将b转为多个满足2^N的数相加，<br>即23</em>13=23*(16+4+2+1)=23&lt;&lt;4+23&lt;&lt;2+23</p>
+</blockquote>
+<p>减法类似加法，只是加的是个负值，除法与乘法相似，只是改成了右移。</p>
+<p>有了如上基础，在看HashMap的tableSizeFor（）方法</p>
+<pre><code>/**
+* Returns a power of two size for the given target capacity.
+* 翻译一下：返回给定值的2次幂。
+*/
+static final int tableSizeFor(int cap) {
+    int n = cap - 1;
+    n |= n &gt;&gt;&gt; 1;
+    n |= n &gt;&gt;&gt; 2;
+    n |= n &gt;&gt;&gt; 4;
+    n |= n &gt;&gt;&gt; 8;
+    n |= n &gt;&gt;&gt; 16;
+    return (n &lt; 0) ? 1 : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+}
+</code></pre><p>总结下tableSizeFor的功能（不考虑大于最大容量的情况）是返回大于输入参数且最近的2的整数次幂的数。比如10，则返回16。上面大牛写的位运算巧妙的实现了这样的运算，位运算属于计算机的运算语言，速度极快。那么上面的计算要怎么理解呢，还是举个例子，好理解：<br>假如我初始化的容量cap=10，则</p>
+<pre><code>int n = cap-1=9,对应的二进制为：  
+0000 1001
+===================
+n |=n&gt;&gt;&gt;1，计算过程如下;               
+0000 1001   =n
+0000 0100   =n&gt;&gt;&gt;1          
+——————————
+0000 1101   =n
+====================    
+n |= n &gt;&gt;&gt; 2,计算过程如下; 
+0000 1101   =n
+0000 0011   =n&gt;&gt;&gt;2
+——————————
+0000 1111   =n
+==================== 
+n |= n &gt;&gt;&gt; 8,计算过程如下;
+0000 1111   =n
+0000 0000   =n&gt;&gt;&gt;8
+——————————
+0000 1111   =n
+=====================
+n |= n &gt;&gt;&gt; 16,计算过程跟上面一样。
+最终n = 0000 1111 转成十进制就是15
+最后函数中return n + 1；则返回的是16.而10的最小2的整数幂就是16。    
+</code></pre>
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">huangchunwu</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2019/07/20/elastic-job源码分析之JOB的启动过程/" class="pre-post btn btn-default" title='elastic-job源码分析之JOB的作业启动过程'>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            elastic-job源码分析之JOB的作业启动过程</span>
+    </a>
+    
+    
+    <a href="/2019/07/20/elastic-job源码分析之概述/" class="next-post btn btn-default" title='elastic-job源码分析之概述'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            elastic-job源码分析之概述</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+<link rel="stylesheet" href="https://cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css">
+<script src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js"></script>
+<script src="//cdn.bootcss.com/blueimp-md5/2.9.0/js/md5.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+var gitalk = new Gitalk({
+    // Gitalk配置
+    language: "zh-CN",
+    clientID: "fa5df22340a335c3522d",
+    clientSecret: "60388a9d73540fa699171acadc9ab709606b9962",
+    repo: "huangchunwu.github.io",
+    owner: "huangchunwu",
+    admin: ["newhcw"],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+});
+gitalk.render('gitalk-container');
+</script>
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            文章目录
+        </h3>
+        
+        <p>暂无目录</p>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2020
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/app.js?rev=@@hash"></script>
+</body>
+</html>
